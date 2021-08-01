@@ -2,22 +2,28 @@
 using Api.Application.ServiceModels;
 using System.Threading.Tasks;
 using Api.Application;
+using Api.Application.ClientModels;
+using Api.Application.ClientQueries;
+using MediatR;
 
 namespace Api.Infrastructure
 {
     public class ServicesService : IServicesService
     {
-        private readonly IServicesClient _client;
+        private readonly IMediator _mediator;
 
-        public ServicesService(IServicesClient client)
+        public ServicesService(IMediator mediator)
         {
-            _client = client;
+            _mediator = mediator;
         }
 
         public async Task<InternalService> GetServiceAsync(CancellationToken cancellationToken)
         {
-            var service = await _client.GetServiceAsync(cancellationToken);
-            var additionalInfo = await _client.GetServiceAdditionalInfoAsync(cancellationToken);
+            var serviceQuery = new ServiceQuery();
+            var service = await _mediator.Send(serviceQuery, cancellationToken);
+
+            var addInfoQuery = new AdditionalInfoQuery();
+            var additionalInfo = await _mediator.Send(addInfoQuery, cancellationToken);
 
             var response = new InternalService
             {
@@ -27,6 +33,13 @@ namespace Api.Infrastructure
             };
 
             return response;
+        }
+
+        public async Task<ServiceAdditionalInfo> GetServiceAdditionalInfo(CancellationToken cancellationToken)
+        {
+            var addInfoQuery = new AdditionalInfoQuery();
+            var additionalInfo = await _mediator.Send(addInfoQuery, cancellationToken);
+            return additionalInfo;
         }
     }
 }

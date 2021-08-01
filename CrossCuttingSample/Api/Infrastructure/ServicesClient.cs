@@ -21,7 +21,7 @@ namespace Api.Infrastructure
         {
             using (var response = await _httpClient.GetAsync($"{RootRoute}/service", cancellationToken))
             {
-                var json = await response.Content.ReadAsStringAsync();
+                var json = await response.Content.ReadAsStringAsync(cancellationToken);
                 var service = JsonConvert.DeserializeObject<Service>(json);
                 return service;
             }
@@ -31,7 +31,7 @@ namespace Api.Infrastructure
         {
             using (var response = await _httpClient.GetAsync($"{RootRoute}/service/additional-info", cancellationToken))
             {
-                var json = await response.Content.ReadAsStringAsync();
+                var json = await response.Content.ReadAsStringAsync(cancellationToken);
                 var additionalInfo = JsonConvert.DeserializeObject<ServiceAdditionalInfo>(json);
                 return additionalInfo;
             }

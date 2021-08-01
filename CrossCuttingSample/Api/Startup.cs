@@ -1,5 +1,8 @@
 using Api.Application;
+using Api.Application.ClientQueries;
 using Api.Infrastructure;
+using Api.Infrastructure.CrossCuttingConcerns;
+using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
@@ -15,6 +18,10 @@ namespace Api
 
             services.AddHttpClient<IServicesClient, ServicesClient>();
             services.AddScoped<IServicesService, ServicesService>();
+
+            services.AddMediatR(typeof(ServiceQuery)); 
+            services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ClientsPipelineBehavior<,>));
+            services.AddTransient(typeof(IPipelineBehavior<,>), typeof(AdditionalPipelineBehavior<,>));
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
