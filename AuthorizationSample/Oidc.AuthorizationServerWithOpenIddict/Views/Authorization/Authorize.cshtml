@@ -1,17 +1,16 @@
-﻿@page
-@using Microsoft.Extensions.Primitives
-@model Oidc.AuthorizationServerWithOpenIddict.Areas.OAuth.Pages.ConsentModel
-@{
-}
+﻿@using Microsoft.Extensions.Primitives
+@using Oidc.AuthorizationServerWithOpenIddict.ViewModels.Authorization
+@model AuthorizeViewModel
 
 <div class="jumbotron">
     <h1>Authorization</h1>
 
     <p class="lead text-left">Do you want to grant <strong>@Model.ApplicationName</strong> access to your data? (scopes requested: @Model.Scope)</p>
 
-    <form action="/connect/authorize" method="post">
+    <form asp-controller="Authorization" asp-action="Authorize" method="post">
         @* Flow the request parameters so they can be received by the Accept/Reject actions: *@
-        @foreach (var parameter in @Model.FormParameters)
+        @foreach (var parameter in Context.Request.HasFormContentType ?
+            (IEnumerable<KeyValuePair<string, StringValues>>) Context.Request.Form : Context.Request.Query)
         {
             <input type="hidden" name="@parameter.Key" value="@parameter.Value" />
         }

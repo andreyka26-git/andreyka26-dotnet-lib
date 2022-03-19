@@ -52,6 +52,7 @@ public class Worker : IHostedService
                     Permissions.Scopes.Roles,
                     Permissions.Prefixes.Scope + "demo_api"
                 }
+                //TODO check with pkce
                 //Requirements =
                 //{
                 //    Requirements.Features.ProofKeyForCodeExchange

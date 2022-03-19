@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Primitives;
 using Oidc.AuthorizationServerWithOpenIddict.Attributes;
+using Oidc.AuthorizationServerWithOpenIddict.ViewModels.Authorization;
 using OpenIddict.Abstractions;
 using OpenIddict.Server.AspNetCore;
 using System.Security.Claims;
@@ -12,7 +13,7 @@ using static OpenIddict.Abstractions.OpenIddictConstants;
 
 namespace Oidc.AuthorizationServerWithOpenIddict.Controllers;
 
-public class AuthorizeController : Controller
+public class AuthorizationController : Controller
 {
     private readonly IOpenIddictApplicationManager _applicationManager;
     private readonly IOpenIddictAuthorizationManager _authorizationManager;
@@ -20,7 +21,7 @@ public class AuthorizeController : Controller
     private readonly SignInManager<IdentityUser> _signInManager;
     private readonly UserManager<IdentityUser> _userManager;
 
-    public AuthorizeController(
+    public AuthorizationController(
         IOpenIddictApplicationManager applicationManager,
         IOpenIddictAuthorizationManager authorizationManager,
         IOpenIddictScopeManager scopeManager,
@@ -79,7 +80,7 @@ public class AuthorizeController : Controller
             {
                 return Forbid(
                     authenticationSchemes: OpenIddictServerAspNetCoreDefaults.AuthenticationScheme,
-                    properties: new AuthenticationProperties(new Dictionary<string, string>
+                    properties: new AuthenticationProperties(new Dictionary<string, string?>
                     {
                         [OpenIddictServerAspNetCoreConstants.Properties.Error] = Errors.LoginRequired,
                         [OpenIddictServerAspNetCoreConstants.Properties.ErrorDescription] = "The user is not logged in."
@@ -175,26 +176,11 @@ public class AuthorizeController : Controller
 
             // In every other case, render the consent form.
             default:
+                return View(new AuthorizeViewModel
                 {
-                    var paramCollection = Request.HasFormContentType ?
-                        (IEnumerable<KeyValuePair<string, StringValues>>)Request.Form :
-                        Request.Query;
-
-                    var queryStr = string.Empty;
-
-                    foreach (var item in paramCollection)
-                    {
-                        queryStr += $"{item.Key}={item.Value}&";
-                    }
-
-                    return RedirectToPage("/consent", new
-                    {
-                        area = "OAuth",
-                        applicationName = await _applicationManager.GetDisplayNameAsync(application),
-                        scope = request.Scope,
-                        formParams = queryStr
-                    });
-                }
+                    ApplicationName = await _applicationManager.GetDisplayNameAsync(application),
+                    Scope = request.Scope
+                });
         }
     }
 

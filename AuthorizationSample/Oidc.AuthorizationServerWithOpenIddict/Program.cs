@@ -76,8 +76,7 @@ builder.Services.AddOpenIddict()
 
 builder.Services.AddHostedService<Worker>();
 
-builder.Services.AddControllers();
-builder.Services.AddRazorPages();
+builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
 
@@ -94,7 +93,12 @@ app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.MapRazorPages();
+app.UseEndpoints(endpoints =>
+{
+    endpoints.MapControllers();
+    endpoints.MapDefaultControllerRoute();
+    endpoints.MapRazorPages();
+});
 app.MapControllers();
 
 app.Run();
