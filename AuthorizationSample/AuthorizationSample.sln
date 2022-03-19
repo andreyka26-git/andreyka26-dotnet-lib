@@ -3,9 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.32112.339
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GoogleAuthWithoutIdentity", "GoogleAuthWithoutIdentity\GoogleAuthWithoutIdentity.csproj", "{3E1C0A63-2018-4692-8FCD-25F3985720FB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GoogleAuthWithoutIdentity", "GoogleAuthWithoutIdentity\GoogleAuthWithoutIdentity.csproj", "{3E1C0A63-2018-4692-8FCD-25F3985720FB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IdentityWithGoogle", "IdentityWithGoogle\IdentityWithGoogle.csproj", "{5906D9F0-F930-418D-9B62-26896828BFF1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IdentityWithGoogle", "IdentityWithGoogle\IdentityWithGoogle.csproj", "{5906D9F0-F930-418D-9B62-26896828BFF1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Oidc.AuthorizationServerWithOpenIddict", "Oidc.AuthorizationServerWithOpenIddict\Oidc.AuthorizationServerWithOpenIddict.csproj", "{2821DDA9-2E18-4473-86A5-D08DC20C95CC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{5906D9F0-F930-418D-9B62-26896828BFF1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5906D9F0-F930-418D-9B62-26896828BFF1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5906D9F0-F930-418D-9B62-26896828BFF1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2821DDA9-2E18-4473-86A5-D08DC20C95CC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2821DDA9-2E18-4473-86A5-D08DC20C95CC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2821DDA9-2E18-4473-86A5-D08DC20C95CC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2821DDA9-2E18-4473-86A5-D08DC20C95CC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
