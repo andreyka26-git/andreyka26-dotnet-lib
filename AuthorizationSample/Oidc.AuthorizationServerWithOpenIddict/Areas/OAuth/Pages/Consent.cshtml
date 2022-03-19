@@ -11,8 +11,7 @@
 
     <form action="/connect/authorize" method="post">
         @* Flow the request parameters so they can be received by the Accept/Reject actions: *@
-        @foreach (var parameter in HttpContext.Request.HasFormContentType ?
-            (IEnumerable<KeyValuePair<string, StringValues>>) HttpContext.Request.Form : HttpContext.Request.Query)
+        @foreach (var parameter in @Model.FormParameters)
         {
             <input type="hidden" name="@parameter.Key" value="@parameter.Value" />
         }

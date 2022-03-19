@@ -32,6 +32,8 @@ public class FormValueRequiredAttribute : ActionMethodSelectorAttribute
             return false;
         }
 
-        return !string.IsNullOrEmpty(context.HttpContext.Request.Form[_name]);
+        var formValue = context.HttpContext.Request.Form[_name];
+        var isSuccess = !string.IsNullOrEmpty(formValue);
+        return isSuccess;
     }
 }

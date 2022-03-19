@@ -175,17 +175,32 @@ public class AuthorizeController : Controller
 
             // In every other case, render the consent form.
             default:
-                return RedirectToPage("/consent", new 
-                { 
-                    applicationName = await _applicationManager.GetDisplayNameAsync(application),
-                    scope = request.Scope,
-                    area = "OAuth"
-                });
+                {
+                    var paramCollection = Request.HasFormContentType ?
+                        (IEnumerable<KeyValuePair<string, StringValues>>)Request.Form :
+                        Request.Query;
+
+                    var queryStr = string.Empty;
+
+                    foreach (var item in paramCollection)
+                    {
+                        queryStr += $"{item.Key}={item.Value}&";
+                    }
+
+                    return RedirectToPage("/consent", new
+                    {
+                        area = "OAuth",
+                        applicationName = await _applicationManager.GetDisplayNameAsync(application),
+                        scope = request.Scope,
+                        formParams = queryStr
+                    });
+                }
         }
     }
 
-    [Authorize, FormValueRequired("submit.Accept")]
-    [HttpPost("~/connect/authorize"), ValidateAntiForgeryToken]
+    [Authorize, FormValueRequired("submit.Accept")] //TODO fix antiforgery token
+    //[HttpPost("~/connect/authorize"), ValidateAntiForgeryToken]
+    [HttpPost("~/connect/authorize")]
     public async Task<IActionResult> Accept()
     {
         var request = HttpContext.GetOpenIddictServerRequest() ??
