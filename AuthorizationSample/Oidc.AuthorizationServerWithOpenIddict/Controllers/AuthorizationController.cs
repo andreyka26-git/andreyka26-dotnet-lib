@@ -184,7 +184,7 @@ public class AuthorizationController : Controller
         }
     }
 
-    [Authorize, FormValueRequired("submit.Accept")] //TODO fix antiforgery token
+    [Authorize, FormValueRequired("submit.Accept")]
     //[HttpPost("~/connect/authorize"), ValidateAntiForgeryToken]
     [HttpPost("~/connect/authorize")]
     public async Task<IActionResult> Accept()
