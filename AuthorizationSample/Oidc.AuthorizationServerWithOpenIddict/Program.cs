@@ -15,6 +15,7 @@ builder.Services.AddDbContext<AuthorizationContext>(options =>
 });
 
 builder.Services.AddDefaultIdentity<IdentityUser>()
+    .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<AuthorizationContext>();
 
 builder.Services.AddAuthentication()
@@ -49,7 +50,8 @@ builder.Services.AddOpenIddict()
         options.SetAuthorizationEndpointUris("/connect/authorize")
                 .SetLogoutEndpointUris("/connect/logout")
                 .SetTokenEndpointUris("/connect/token")
-                .SetUserinfoEndpointUris("/connect/userinfo");
+                .SetUserinfoEndpointUris("/connect/userinfo")
+                .SetIntrospectionEndpointUris("/connect/introspect");
 
         options.RegisterScopes(Scopes.Email, Scopes.Profile, Scopes.Roles);
 
@@ -99,6 +101,5 @@ app.UseEndpoints(endpoints =>
     endpoints.MapDefaultControllerRoute();
     endpoints.MapRazorPages();
 });
-app.MapControllers();
 
 app.Run();

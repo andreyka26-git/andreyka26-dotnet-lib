@@ -1,5 +1,6 @@
 ﻿using Oidc.AuthorizationServerWithOpenIddict.Data;
 using OpenIddict.Abstractions;
+using System.Globalization;
 using static OpenIddict.Abstractions.OpenIddictConstants;
 
 namespace Oidc.AuthorizationServerWithOpenIddict;
@@ -18,12 +19,20 @@ public class Worker : IHostedService
         var context = scope.ServiceProvider.GetRequiredService<AuthorizationContext>();
         await context.Database.EnsureCreatedAsync();
 
-        var manager = scope.ServiceProvider.GetRequiredService<IOpenIddictApplicationManager>();
+        await RegisterApplicationsAsync(scope.ServiceProvider, cancellationToken);
+        await RegisterScopesAsync(scope.ServiceProvider);
 
-        var client = await manager.FindByClientIdAsync("mvc");
-        if (client != null)
+        static async Task RegisterApplicationsAsync(IServiceProvider provider, CancellationToken cancellationToken)
         {
-            await manager.DeleteAsync(client, cancellationToken);
+            var manager = provider.GetRequiredService<IOpenIddictApplicationManager>();
+
+            // web client
+            var client = await manager.FindByClientIdAsync("mvc");
+
+            if (client != null)
+            {
+                await manager.DeleteAsync(client, cancellationToken);
+            }
 
             await manager.CreateAsync(new OpenIddictApplicationDescriptor
             {
@@ -33,13 +42,13 @@ public class Worker : IHostedService
                 DisplayName = "MVC client application",
                 PostLogoutRedirectUris =
                 {
-                    new Uri("https://localhost:44338/signout-callback-oidc")
+                    new Uri("https://localhost:7001/signout-callback-oidc")
                 },
-                RedirectUris =
+                    RedirectUris =
                 {
-                    new Uri("https://oidcdebugger.com/debug")
+                    new Uri("https://localhost:7001/signin-oidc")
                 },
-                Permissions =
+                    Permissions =
                 {
                     Permissions.Endpoints.Authorization,
                     Permissions.Endpoints.Logout,
@@ -50,14 +59,51 @@ public class Worker : IHostedService
                     Permissions.Scopes.Email,
                     Permissions.Scopes.Profile,
                     Permissions.Scopes.Roles,
-                    Permissions.Prefixes.Scope + "demo_api"
+                    Permissions.Prefixes.Scope + "api1"
+                },
+                    Requirements =
+                {
+                    Requirements.Features.ProofKeyForCodeExchange
                 }
-                //TODO check with pkce
-                //Requirements =
-                //{
-                //    Requirements.Features.ProofKeyForCodeExchange
-                //}
             });
+
+            // resource server
+            if (await manager.FindByClientIdAsync("resource_server_1") == null)
+            {
+                var descriptor = new OpenIddictApplicationDescriptor
+                {
+                    ClientId = "resource_server_1",
+                    ClientSecret = "846B62D0-DEF9-4215-A99D-86E6B8DAB342",
+                    Permissions =
+                        {
+                            Permissions.Endpoints.Introspection
+                        }
+                };
+
+                await manager.CreateAsync(descriptor);
+            }
+        }
+
+        static async Task RegisterScopesAsync(IServiceProvider provider)
+        {
+            var manager = provider.GetRequiredService<IOpenIddictScopeManager>();
+
+            if (await manager.FindByNameAsync("api1") is null)
+            {
+                await manager.CreateAsync(new OpenIddictScopeDescriptor
+                {
+                    DisplayName = "Dantooine API access",
+                    DisplayNames =
+                    {
+                        [CultureInfo.GetCultureInfo("fr-FR")] = "Accès à l'API de démo"
+                    },
+                    Name = "api1",
+                    Resources =
+                    {
+                        "resource_server_1"
+                    }
+                });
+            }
         }
     }
 
