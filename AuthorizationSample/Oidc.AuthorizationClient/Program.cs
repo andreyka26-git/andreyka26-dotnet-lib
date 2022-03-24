@@ -34,6 +34,7 @@ builder.Services.AddAuthentication(options =>
     options.Scope.Add("email");
     options.Scope.Add("roles");
     options.Scope.Add("api1");
+    options.Scope.Add("api2");
 
     options.MapInboundClaims = false;
 

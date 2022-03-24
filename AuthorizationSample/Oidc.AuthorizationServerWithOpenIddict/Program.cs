@@ -1,7 +1,11 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using Oidc.AuthorizationServerWithOpenIddict;
 using Oidc.AuthorizationServerWithOpenIddict.Data;
+using Oidc.AuthorizationServerWithOpenIddict.Encryption;
+using System.Security.Cryptography.X509Certificates;
+using System.Text;
 using static OpenIddict.Abstractions.OpenIddictConstants;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -57,8 +61,18 @@ builder.Services.AddOpenIddict()
 
         options.AllowAuthorizationCodeFlow();
 
-        options.AddDevelopmentEncryptionCertificate()
-                .AddDevelopmentSigningCertificate();
+        options.AddDevelopmentSigningCertificate();
+        //options.AddDevelopmentEncryptionCertificate()
+        //        .AddDevelopmentSigningCertificate();
+
+        //var sigPath = Path.Combine(Directory.GetCurrentDirectory(), "certificates", "signing-certificate_2024.3.23.pfx");
+        //var encPath = Path.Combine(Directory.GetCurrentDirectory(), "certificates", "encryption-certificate_2024.3.23.pfx");
+
+        //options.AddSigningCertificate(new X509Certificate2(sigPath, string.Empty))
+        //.AddEncryptionCertificate(new X509Certificate2(encPath, string.Empty));
+
+        options.AddEncryptionKey(new SymmetricSecurityKey(
+            Convert.FromBase64String("DRjd/GnduI3Efzen9V9BvbNUfc/VKgXltV7Kbk9sMkY=")));
 
         options.UseAspNetCore()
                 .EnableAuthorizationEndpointPassthrough()
@@ -74,8 +88,12 @@ builder.Services.AddOpenIddict()
 
         // Register the ASP.NET Core host.
         options.UseAspNetCore();
+
+        //var key = new SymmetricSecurityKey(Encoding.ASCII.GetBytes("b14ca5898a4e4133bbce2ea2315a1916"));
+        //options.Configure(o => o.TokenValidationParameters.IssuerSigningKey = key);
     });
 
+builder.Services.AddTransient<IEncryptor, Encryptor>();
 builder.Services.AddHostedService<Worker>();
 
 builder.Services.AddControllersWithViews();

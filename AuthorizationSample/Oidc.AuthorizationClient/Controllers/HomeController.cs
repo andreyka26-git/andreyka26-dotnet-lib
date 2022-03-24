@@ -17,8 +17,8 @@ public class HomeController : Controller
     [HttpGet("~/")]
     public ActionResult Index() => View("Home");
 
-    [Authorize, HttpPost("~/")]
-    public async Task<ActionResult> Index(CancellationToken cancellationToken)
+    [Authorize, HttpPost("~/first")]
+    public async Task<ActionResult> First(CancellationToken cancellationToken)
     {
         var token = await HttpContext.GetTokenAsync(CookieAuthenticationDefaults.AuthenticationScheme, OpenIdConnectParameterNames.AccessToken);
         if (string.IsNullOrEmpty(token))
@@ -30,6 +30,28 @@ public class HomeController : Controller
         using var client = _httpClientFactory.CreateClient();
 
         using var request = new HttpRequestMessage(HttpMethod.Get, "https://localhost:7002/api/message");
+        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+        using var response = await client.SendAsync(request, cancellationToken);
+        var content = await response.Content.ReadAsStringAsync();
+        response.EnsureSuccessStatusCode();
+
+        return View("Home", model: await response.Content.ReadAsStringAsync());
+    }
+
+    [Authorize, HttpPost("~/second")]
+    public async Task<ActionResult> Second(CancellationToken cancellationToken)
+    {
+        var token = await HttpContext.GetTokenAsync(CookieAuthenticationDefaults.AuthenticationScheme, OpenIdConnectParameterNames.AccessToken);
+        if (string.IsNullOrEmpty(token))
+        {
+            throw new InvalidOperationException("The access token cannot be found in the authentication ticket. " +
+                                                "Make sure that SaveTokens is set to true in the OIDC options.");
+        }
+
+        using var client = _httpClientFactory.CreateClient();
+
+        using var request = new HttpRequestMessage(HttpMethod.Get, "https://localhost:7003/api/message");
         request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
         using var response = await client.SendAsync(request, cancellationToken);

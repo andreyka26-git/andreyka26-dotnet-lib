@@ -1,7 +1,4 @@
-using Microsoft.IdentityModel.Tokens;
 using OpenIddict.Validation.AspNetCore;
-using System.Security.Cryptography.X509Certificates;
-using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,10 +11,13 @@ builder.Services.AddOpenIddict()
         // Note: the validation handler uses OpenID Connect discovery
         // to retrieve the address of the introspection endpoint.
         options.SetIssuer("https://localhost:7000/");
-        options.AddAudiences("resource_server_1");
+        options.AddAudiences("resource_server_2");
 
-        options.AddEncryptionKey(new SymmetricSecurityKey(
-            Convert.FromBase64String("DRjd/GnduI3Efzen9V9BvbNUfc/VKgXltV7Kbk9sMkY=")));
+        // Configure the validation handler to use introspection and register the client
+        // credentials used when communicating with the remote introspection endpoint.
+        options.UseIntrospection()
+               .SetClientId("resource_server_2")
+               .SetClientSecret("846B62D0-DEF9-4215-A99D-86E6B8DAB342");
 
         // Register the System.Net.Http integration.
         options.UseSystemNetHttp();
