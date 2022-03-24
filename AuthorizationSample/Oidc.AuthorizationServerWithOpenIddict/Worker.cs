@@ -59,26 +59,23 @@ public class Worker : IHostedService
         // web client
         var client = await manager.FindByClientIdAsync("mvc");
 
-        if (client != null)
+        if (client == null)
         {
-            await manager.DeleteAsync(client, cancellationToken);
-        }
-
-        await manager.CreateAsync(new OpenIddictApplicationDescriptor
-        {
-            ClientId = "mvc",
-            ClientSecret = "901564A5-E7FE-42CB-B10D-61EF6A8F3654",
-            ConsentType = ConsentTypes.Explicit,
-            DisplayName = "MVC client application",
-            PostLogoutRedirectUris =
+            await manager.CreateAsync(new OpenIddictApplicationDescriptor
+            {
+                ClientId = "mvc",
+                ClientSecret = "901564A5-E7FE-42CB-B10D-61EF6A8F3654",
+                ConsentType = ConsentTypes.Explicit,
+                DisplayName = "MVC client application",
+                PostLogoutRedirectUris =
             {
                 new Uri("https://localhost:7001/signout-callback-oidc")
             },
-            RedirectUris =
+                RedirectUris =
             {
                 new Uri("https://localhost:7001/signin-oidc")
             },
-            Permissions =
+                Permissions =
             {
                 Permissions.Endpoints.Authorization,
                 Permissions.Endpoints.Logout,
@@ -92,11 +89,12 @@ public class Worker : IHostedService
                 Permissions.Prefixes.Scope + "api1",
                 Permissions.Prefixes.Scope + "api2"
             },
-            Requirements =
+                Requirements =
             {
                 Requirements.Features.ProofKeyForCodeExchange
             }
-        });
+            });
+        }
 
         //There is no need to register resource_server_1 because it uses symetric key for the token validation
         // resource server
@@ -158,7 +156,7 @@ public class Worker : IHostedService
                 Resources =
                 {
                     "resource_server_2"
-                }
+                },
             });
         }
     }

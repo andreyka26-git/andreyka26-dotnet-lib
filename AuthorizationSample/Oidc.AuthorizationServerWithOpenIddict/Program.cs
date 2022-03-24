@@ -61,15 +61,11 @@ builder.Services.AddOpenIddict()
 
         options.AllowAuthorizationCodeFlow();
 
-        options.AddDevelopmentSigningCertificate();
-        //options.AddDevelopmentEncryptionCertificate()
-        //        .AddDevelopmentSigningCertificate();
+        var sigPath = Path.Combine(Directory.GetCurrentDirectory(), "certificates", "signing-certificate_2024.3.23.pfx");
+        var encPath = Path.Combine(Directory.GetCurrentDirectory(), "certificates", "encryption-certificate_2024.3.23.pfx");
 
-        //var sigPath = Path.Combine(Directory.GetCurrentDirectory(), "certificates", "signing-certificate_2024.3.23.pfx");
-        //var encPath = Path.Combine(Directory.GetCurrentDirectory(), "certificates", "encryption-certificate_2024.3.23.pfx");
-
-        //options.AddSigningCertificate(new X509Certificate2(sigPath, string.Empty))
-        //.AddEncryptionCertificate(new X509Certificate2(encPath, string.Empty));
+        options.AddSigningCertificate(new X509Certificate2(sigPath, string.Empty))
+        .AddEncryptionCertificate(new X509Certificate2(encPath, string.Empty));
 
         options.AddEncryptionKey(new SymmetricSecurityKey(
             Convert.FromBase64String("DRjd/GnduI3Efzen9V9BvbNUfc/VKgXltV7Kbk9sMkY=")));
