@@ -13,7 +13,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Oidc.AuthorizationClient", 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Oidc.ResourceServer", "Oidc.ResourceServer\Oidc.ResourceServer.csproj", "{29751C1A-E7D1-44E3-AE42-A25A27FCA925}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Oidc.SecondResourceServer", "Oidc.SecondResourceServer\Oidc.SecondResourceServer.csproj", "{A4A280BB-C86C-4A20-B813-7C72CC9F7274}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Oidc.SecondResourceServer", "Oidc.SecondResourceServer\Oidc.SecondResourceServer.csproj", "{A4A280BB-C86C-4A20-B813-7C72CC9F7274}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BasicAuth", "BasicAuth\BasicAuth.csproj", "{35B3A692-47D8-4D6F-BA7D-31A4D72382BC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -45,6 +47,10 @@ Global
 		{A4A280BB-C86C-4A20-B813-7C72CC9F7274}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A4A280BB-C86C-4A20-B813-7C72CC9F7274}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A4A280BB-C86C-4A20-B813-7C72CC9F7274}.Release|Any CPU.Build.0 = Release|Any CPU
+		{35B3A692-47D8-4D6F-BA7D-31A4D72382BC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{35B3A692-47D8-4D6F-BA7D-31A4D72382BC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{35B3A692-47D8-4D6F-BA7D-31A4D72382BC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{35B3A692-47D8-4D6F-BA7D-31A4D72382BC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
