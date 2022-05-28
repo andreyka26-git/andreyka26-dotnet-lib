@@ -3,10 +3,10 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace BasicAuth.Controllers
 {
-    [Route("api/resources")]
     [ApiController]
     public class ResourcesController : ControllerBase
     {
+        [HttpGet("api/resources")]
         [Authorize]
         public IActionResult GetResources()
         {
