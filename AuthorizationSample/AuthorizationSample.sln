@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.32112.339
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GoogleAuthWithoutIdentity", "GoogleAuthWithoutIdentity\GoogleAuthWithoutIdentity.csproj", "{3E1C0A63-2018-4692-8FCD-25F3985720FB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IdentityWithoutGoogle", "IdentityWithoutGoogle\IdentityWithoutGoogle.csproj", "{3E1C0A63-2018-4692-8FCD-25F3985720FB}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IdentityWithGoogle", "IdentityWithGoogle\IdentityWithGoogle.csproj", "{5906D9F0-F930-418D-9B62-26896828BFF1}"
 EndProject
@@ -15,7 +15,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Oidc.ResourceServer", "Oidc
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Oidc.SecondResourceServer", "Oidc.SecondResourceServer\Oidc.SecondResourceServer.csproj", "{A4A280BB-C86C-4A20-B813-7C72CC9F7274}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BasicAuth", "BasicAuth\BasicAuth.csproj", "{35B3A692-47D8-4D6F-BA7D-31A4D72382BC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Basic.Server", "Basic.Server\Basic.Server.csproj", "{35B3A692-47D8-4D6F-BA7D-31A4D72382BC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Digest.Server", "Digest.Server\Digest.Server.csproj", "{1ABACEAA-9F97-4C39-BD1D-2567B8E79CDC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -51,6 +53,10 @@ Global
 		{35B3A692-47D8-4D6F-BA7D-31A4D72382BC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{35B3A692-47D8-4D6F-BA7D-31A4D72382BC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{35B3A692-47D8-4D6F-BA7D-31A4D72382BC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1ABACEAA-9F97-4C39-BD1D-2567B8E79CDC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1ABACEAA-9F97-4C39-BD1D-2567B8E79CDC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1ABACEAA-9F97-4C39-BD1D-2567B8E79CDC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1ABACEAA-9F97-4C39-BD1D-2567B8E79CDC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
