@@ -8,9 +8,9 @@
 <div class="text-center">
     <h1 class="display-4">Welcome</h1>
     
-    @if (!string.IsNullOrEmpty(Model.Response))
+    @if (!string.IsNullOrEmpty(Model.ResourceServerResponse ))
     {
-        <p>Response from server: @Model.Response</p>
+        <p>Response from server: @Model.ResourceServerResponse</p>
     }
 
     <form method="post">

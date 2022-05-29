@@ -10,8 +10,9 @@ namespace Digest.Server.Infrastructure;
 internal class DigestAuthenticationHandler : AuthenticationHandler<DigestAuthenticationOptions>
 {
     private readonly HeaderService _headerService;
+    private readonly DigestAuthService _digestAuth;
 
-    private DigestAuthService _digestAuth;
+    private readonly DigestAuthenticationOptions _options;
 
     public DigestAuthenticationHandler(IOptionsMonitor<DigestAuthenticationOptions> options,
         ILoggerFactory logger,
@@ -23,6 +24,7 @@ internal class DigestAuthenticationHandler : AuthenticationHandler<DigestAuthent
     {
         _headerService = headerService;
         _digestAuth = digestAuth;
+        _options = options.CurrentValue;
     }
 
     protected override async Task<AuthenticateResult> HandleAuthenticateAsync()
@@ -44,7 +46,7 @@ internal class DigestAuthenticationHandler : AuthenticationHandler<DigestAuthent
                 digestDict[Consts.ClientNonceNaming],
                 digestDict[Consts.ResponseNaming]);
         }
-        catch (Exception)
+        catch
         {
             return AuthenticateResult.NoResult();
         }
@@ -54,7 +56,7 @@ internal class DigestAuthenticationHandler : AuthenticationHandler<DigestAuthent
         var authenticatedUser = new AuthenticatedUser(Consts.Scheme, true, digestValue.Username);
         var principal = new ClaimsPrincipal(new ClaimsIdentity(authenticatedUser));
 
-        if (_digestAuth.UseAuthenticationInfoHeader)
+        if (_options.UseAuthenticationInfoHeader)
         {
             Response.Headers[Consts.AuthenticationInfoHeaderName] = await _digestAuth.GetAuthInfoHeaderAsync(digestValue);
         }

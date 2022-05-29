@@ -29,7 +29,7 @@ namespace Digest.Client.Pages
         public string Nonce { get; set; }
         public string Opaque { get; set; }
 
-        public string Response { get; set; }
+        public string ResourceServerResponse { get; set; }
 
         public async Task OnGetAsync()
         {
@@ -66,25 +66,25 @@ namespace Digest.Client.Pages
 
             var response = _hashService.ToMd5Hash($"{a1Hash}:{nonce}:{nc}:{cnonce}:{qop}:{a2Hash}");
 
-            var parts = new List<DigestSubItem> {
-                new DigestSubItem("username", userName, true),
-                new DigestSubItem("realm", realm, true),
-                new DigestSubItem("nonce", nonce, true),
-                new DigestSubItem("uri", ServerUrl, true),
-                new DigestSubItem("qop", qop, true),
-                new DigestSubItem("nc", nc, true),
-                new DigestSubItem("cnonce", cnonce, true),
-                new DigestSubItem("response", response, true),
-                new DigestSubItem("opaque", opaque, true),
-                new DigestSubItem("algorithm", "MD5", false),
+            var parts = new List<DigestValueSubItem> {
+                new DigestValueSubItem(Consts.UserNameNaming, userName, true),
+                new DigestValueSubItem(Consts.RealmNaming, realm, true),
+                new DigestValueSubItem(Consts.NonceNaming, nonce, true),
+                new DigestValueSubItem(Consts.UriNaming, ServerUrl, true),
+                new DigestValueSubItem(Consts.QopNaming, qop, true),
+                new DigestValueSubItem(Consts.NonceCounterNaming, nc, true),
+                new DigestValueSubItem(Consts.ClientNonceNaming, cnonce, true),
+                new DigestValueSubItem(Consts.ResponseNaming, response, true),
+                new DigestValueSubItem(Consts.OpaqueNaming, opaque, true),
+                new DigestValueSubItem(Consts.AlgorithmNaming, Consts.Algorithm, false),
             };
 
             using (var req = new HttpRequestMessage(HttpMethod.Get, ServerUrl))
             {
-                req.Headers.Add("Authorization", _headerService.BuildDigestHeaderValue(parts));
+                req.Headers.Add(Consts.AuthorizationHeaderName, _headerService.BuildDigestHeaderValue(parts));
                 var resp = await _httpClient.SendAsync(req);
 
-                Response = await resp.Content.ReadAsStringAsync();
+                ResourceServerResponse = await resp.Content.ReadAsStringAsync();
             }
         }
     }

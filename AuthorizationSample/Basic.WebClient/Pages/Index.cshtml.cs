@@ -19,7 +19,7 @@ namespace Basic.WebClient.Pages
         public string UserName { get; set; }
         public string Password { get; set; }
 
-        public string Response { get; set; }
+        public string ResourceServerResponse { get; set; }
 
         public void OnGet()
         {
@@ -37,7 +37,7 @@ namespace Basic.WebClient.Pages
                 req.Headers.Authorization = new AuthenticationHeaderValue("Basic", authValue);
 
                 var resp = await _httpClient.SendAsync(req);
-                Response = await resp.Content.ReadAsStringAsync();
+                ResourceServerResponse = await resp.Content.ReadAsStringAsync();
             }
         }
     }

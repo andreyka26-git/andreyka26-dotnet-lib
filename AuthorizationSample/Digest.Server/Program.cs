@@ -5,7 +5,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 
-builder.Services.AddScoped<IUsernameHashedSecretProvider, TrivialUsernameHashedSecretProvider>();
+builder.Services.AddScoped<IUsernameHashedSecretProvider, UsernameHashedSecretProvider>();
 builder.Services.AddSingleton<IHashService, HashService>();
 builder.Services.AddTransient<DigestAuthService>();
 builder.Services.AddSingleton<HeaderService>();

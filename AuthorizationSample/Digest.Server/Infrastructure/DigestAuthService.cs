@@ -27,58 +27,56 @@ internal class DigestAuthService
 
     public string GetUnauthorizedDigestHeaderValue()
     {
-        var parts = new List<DigestSubItem> {
-                new DigestSubItem(Consts.RealmNaming, _options.Realm, true),
-                new DigestSubItem(Consts.NonceNaming, CreateNonce(DateTime.UtcNow), true),
-                new DigestSubItem(Consts.QopNaming, Consts.QopMode, true),
-                new DigestSubItem(Consts.OpaqueNaming, Consts.Opaque, true),
-                new DigestSubItem(Consts.AlgorithmNaming, Consts.Algorithm, false),
+        var parts = new List<DigestValueSubItem> {
+                new DigestValueSubItem(Consts.RealmNaming, _options.Realm, true),
+                new DigestValueSubItem(Consts.NonceNaming, CreateNonce(DateTime.UtcNow), true),
+                new DigestValueSubItem(Consts.QopNaming, Consts.QopMode, true),
+                new DigestValueSubItem(Consts.OpaqueNaming, Consts.Opaque, true),
+                new DigestValueSubItem(Consts.AlgorithmNaming, Consts.Algorithm, false),
             };
 
         return _headerService.BuildDigestHeaderValue(parts);
     }
 
-    public async Task<string> GetAuthInfoHeaderAsync(DigestValue response)
+    public async Task<string> GetAuthInfoHeaderAsync(DigestValue clientDigestValue)
     {
-        var timestampStr = response.Nonce.Substring(0, Consts.NonceTimestampFormat.Length);
+        var timestampStr = clientDigestValue.Nonce[..Consts.NonceTimestampFormat.Length];
         var timestamp = ParseTimestamp(timestampStr);
 
         var delta = DateTime.UtcNow - timestamp;
         var deltaSeconds = Math.Abs(delta.TotalSeconds);
 
-        var a1Hash = await _usernameHashedSecretProvider.GetA1Md5HashForUsernameAsync(response.Username, _options.Realm);
-        var a2Hash = _hashService.ToMd5Hash($":{response.Uri}");
+        var a1Hash = await _usernameHashedSecretProvider.GetA1Md5HashForUsernameAsync(clientDigestValue.Username, _options.Realm);
+        var a2Hash = _hashService.ToMd5Hash($":{clientDigestValue.Uri}");
 
-        var resp = _hashService.ToMd5Hash($"{a1Hash}:{response.Nonce}:{response.NonceCounter}:{response.ClientNonce}:{Consts.QopMode}:{a2Hash}");
+        var resp = _hashService.ToMd5Hash($"{a1Hash}:{clientDigestValue.Nonce}:{clientDigestValue.NonceCounter}:{clientDigestValue.ClientNonce}:{Consts.QopMode}:{a2Hash}");
 
-        var digestValueParts = new List<DigestSubItem>();
+        var digestValueParts = new List<DigestValueSubItem>();
 
         if (Math.Abs(deltaSeconds - _options.MaxNonceAgeSeconds) < _options.DeltaSecondsToNextNonce)
         {
-            digestValueParts.Add(new DigestSubItem("nextnonce", CreateNonce(DateTime.UtcNow), true));
+            digestValueParts.Add(new DigestValueSubItem("nextnonce", CreateNonce(DateTime.UtcNow), true));
         }
 
         digestValueParts.Add(new("qop", Consts.QopMode, true));
         digestValueParts.Add(new("rspauth", resp, true));
-        digestValueParts.Add(new("cnonce", response.ClientNonce, true));
-        digestValueParts.Add(new("nc", response.NonceCounter, false));
+        digestValueParts.Add(new("cnonce", clientDigestValue.ClientNonce, true));
+        digestValueParts.Add(new("nc", clientDigestValue.NonceCounter, false));
 
         return _headerService.BuildDigestHeaderValue(digestValueParts, string.Empty);
     }
 
-    public async Task EnsureDigestValueValid(DigestValue challengeResponse, string requestMethod)
+    public async Task EnsureDigestValueValid(DigestValue clientDigestValue, string requestMethod)
     {
-        EnsureNonceValid(challengeResponse);
+        EnsureNonceValid(clientDigestValue);
 
-        var a1Hash = await _usernameHashedSecretProvider.GetA1Md5HashForUsernameAsync(challengeResponse.Username, _options.Realm);
-
-        var a2 = $"{requestMethod}:{challengeResponse.Uri}";
-        var a2Hash = _hashService.ToMd5Hash(a2);
+        var a1Hash = await _usernameHashedSecretProvider.GetA1Md5HashForUsernameAsync(clientDigestValue.Username, _options.Realm);
+        var a2Hash = _hashService.ToMd5Hash($"{requestMethod}:{clientDigestValue.Uri}");
 
         var expectedHash = _hashService
-            .ToMd5Hash($"{a1Hash}:{challengeResponse.Nonce}:{challengeResponse.NonceCounter}:{challengeResponse.ClientNonce}:{Consts.QopMode}:{a2Hash}");
+            .ToMd5Hash($"{a1Hash}:{clientDigestValue.Nonce}:{clientDigestValue.NonceCounter}:{clientDigestValue.ClientNonce}:{Consts.QopMode}:{a2Hash}");
 
-        if (expectedHash != challengeResponse.Response)
+        if (expectedHash != clientDigestValue.Response)
             throw new Exception("Hashes are not equal");
     }
 
@@ -90,9 +88,7 @@ internal class DigestAuthService
         var delta = DateTime.UtcNow - timestamp;
 
         if (Math.Abs(delta.TotalSeconds) > _options.MaxNonceAgeSeconds)
-        {
             throw new Exception("time exceeded MaxNonceAge");
-        }
 
         var currentNonce = CreateNonce(timestamp.DateTime);
 
