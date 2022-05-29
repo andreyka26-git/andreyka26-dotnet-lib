@@ -1,9 +1,11 @@
-﻿using Basic.Server.Auth;
+﻿using Basic.Server.Application;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Options;
 using System.Security.Claims;
 using System.Text;
 using System.Text.Encodings.Web;
+
+namespace Basic.Server.Infrastructure;
 
 public class BasicAuthenticationHandler : AuthenticationHandler<AuthenticationSchemeOptions>
 {

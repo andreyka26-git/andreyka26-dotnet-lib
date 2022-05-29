@@ -45,8 +45,7 @@ namespace Digest.Client.Pages
 
                 var authHeader = resp.Headers.GetValues("WWW-Authenticate").Single();
 
-                var realmInd = authHeader.IndexOf("realm");
-                var values = authHeader.Substring(0, "Digest ".Length).Split(",");
+                var values = authHeader.Substring("Digest".Length).Split(",");
 
                 var valuesDict = new Dictionary<string, string>();
 
@@ -54,10 +53,7 @@ namespace Digest.Client.Pages
                 {
                     var keyValuePair = val.Split("=", 2);
 
-                    if (keyValuePair[1].StartsWith('\"'))
-                        keyValuePair[1] = keyValuePair[1].Trim('\"');
-
-                    valuesDict.Add(keyValuePair[0], keyValuePair[1]);
+                    valuesDict.Add(keyValuePair[0].Trim(), keyValuePair[1].Trim('\"'));
                 }
 
                 //for this simple example we don't support anything except MD5 so we don't parse it
@@ -81,6 +77,7 @@ namespace Digest.Client.Pages
             var response = _hashService.ToMd5Hash($"{a1Hash}:{nonce}:{nc}:{cnonce}:{qop}:{a2Hash}");
 
             var parts = new (string Key, string Value, bool ShouldQuote)[] {
+                ("username", userName, true),
                 ("realm", realm, true),
                 ("nonce", nonce, true),
                 ("uri", ServerUrl, true),
@@ -94,7 +91,7 @@ namespace Digest.Client.Pages
 
             using (var req = new HttpRequestMessage(HttpMethod.Get, ServerUrl))
             {
-                req.Headers.Add("Authorization", $"Digest {parts.Select(_headerService.FormatHeaderComponent)}");
+                req.Headers.Add("Authorization", $"Digest {string.Join(", ", parts.Select(_headerService.FormatHeaderComponent))}");
                 var resp = await _httpClient.SendAsync(req);
 
                 Response = await resp.Content.ReadAsStringAsync();

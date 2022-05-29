@@ -58,7 +58,9 @@ internal class DigestAuthenticationHandler : AuthenticationHandler<DigestAuthent
             return AuthenticateResult.NoResult();
         }
 
-        var identity = new ClaimsIdentity(Scheme.Name);
+        var authenticatedUser = new AuthenticatedUser("BasicAuthentication", true, challengeResponse.Username);
+
+        var identity = new ClaimsIdentity(authenticatedUser);
         identity.AddClaim(new Claim(DigestAuthImplementation.DigestAuthenticationClaimName, validatedUsername));
         var principal = new ClaimsPrincipal(identity);
 

@@ -1,6 +1,6 @@
 ﻿using System.Security.Principal;
 
-namespace Basic.Server.Auth;
+namespace Basic.Server.Application;
 
 public class AuthenticatedUser : IIdentity
 {

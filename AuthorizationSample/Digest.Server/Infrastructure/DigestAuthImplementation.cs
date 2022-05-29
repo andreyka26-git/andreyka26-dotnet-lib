@@ -144,7 +144,7 @@ internal class DigestAuthImplementation
             var timestampStr = challengeResponse.Nonce.Substring(0, NonceTimestampFormat.Length);
             var timestamp = ParseTimestamp(timestampStr);
 
-            var delta = timestamp - DateTime.UtcNow;
+            var delta = DateTime.UtcNow - timestamp;
 
             if (Math.Abs(delta.TotalSeconds) > _config.MaxNonceAgeSeconds)
             {

@@ -6,11 +6,11 @@ internal class TrivialUsernameHashedSecretProvider : IUsernameHashedSecretProvid
 {
     public Task<string> GetA1Md5HashForUsernameAsync(string username, string realm)
     {
-        if (username == "eddie" && realm == "some-realm")
+        if (username == "andreyka26_" && realm == "some-realm")
         {
             // The hash value below would have been pre-computed & stored in the database.
-            //var hash = DigestAuthentication.ComputeA1Md5Hash("eddie", "some-realm", "starwars123");
-            const string hash = "d388783882abeb762de9801d4379570b";
+            // var hash = _hashService.ToMd5Hash("andreyka26_:some-realm:mypass1");
+            const string hash = "3173b15af925576b8b6eb4c65edb9e84";
 
             return Task.FromResult(hash);
         }
