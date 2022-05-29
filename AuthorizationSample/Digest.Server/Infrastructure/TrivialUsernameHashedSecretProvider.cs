@@ -16,6 +16,6 @@ internal class TrivialUsernameHashedSecretProvider : IUsernameHashedSecretProvid
         }
 
         // User not found
-        return Task.FromResult(string.Empty);
+        throw new Exception("Username is not found");
     }
 }

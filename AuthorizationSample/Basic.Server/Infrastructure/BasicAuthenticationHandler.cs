@@ -20,17 +20,17 @@ public class BasicAuthenticationHandler : AuthenticationHandler<AuthenticationSc
 
     protected override Task<AuthenticateResult> HandleAuthenticateAsync()
     {
-        Response.Headers.Add("WWW-Authenticate", "Basic");
+        Response.Headers.Add(Consts.AuthenticationInfoHeaderName, Consts.Scheme);
 
-        if (!Request.Headers.ContainsKey("Authorization"))
+        if (!Request.Headers.ContainsKey(Consts.AuthorizationHeaderName))
         {
             return Task.FromResult(AuthenticateResult.Fail("Authorization header missing."));
         }
 
-        var authorizationHeader = Request.Headers["Authorization"].ToString();
-        var authHeaderRegex = authorizationHeader.Split(' ', 2);
+        var authorizationHeader = Request.Headers[Consts.AuthorizationHeaderName].ToString();
+        var authHeaderValues = authorizationHeader.Split(' ', 2);
 
-        var base64Value = authHeaderRegex[1];
+        var base64Value = authHeaderValues[1];
 
         var authBase64 = Encoding.UTF8.GetString(Convert.FromBase64String(base64Value));
         var authSplit = authBase64.Split(':', 2);
@@ -40,7 +40,7 @@ public class BasicAuthenticationHandler : AuthenticationHandler<AuthenticationSc
 
         EnsureAuthenticated(username, password);
 
-        var authenticatedUser = new AuthenticatedUser("BasicAuthentication", true, username);
+        var authenticatedUser = new AuthenticatedUser(Consts.Scheme, true, username);
         var claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity(authenticatedUser));
 
         return Task.FromResult(AuthenticateResult.Success(new AuthenticationTicket(claimsPrincipal, Scheme.Name)));

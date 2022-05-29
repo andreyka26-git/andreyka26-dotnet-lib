@@ -9,64 +9,54 @@ namespace Digest.Server.Infrastructure;
 
 internal class DigestAuthenticationHandler : AuthenticationHandler<DigestAuthenticationOptions>
 {
-    private readonly IUsernameHashedSecretProvider _usernameHashedSecretProvider;
-    private readonly IHashService _hashService;
     private readonly HeaderService _headerService;
 
-    private DigestAuthImplementation _digestAuth;
+    private DigestAuthService _digestAuth;
 
     public DigestAuthenticationHandler(IOptionsMonitor<DigestAuthenticationOptions> options,
         ILoggerFactory logger,
         UrlEncoder encoder,
         ISystemClock clock,
-        IUsernameHashedSecretProvider usernameHashedSecretProvider,
-        IHashService hashService,
-        HeaderService headerService)
+        HeaderService headerService,
+        DigestAuthService digestAuth)
         : base(options, logger, encoder, clock)
     {
-        _usernameHashedSecretProvider = usernameHashedSecretProvider;
-        _hashService = hashService;
         _headerService = headerService;
-    }
-
-    protected override async Task InitializeHandlerAsync()
-    {
-        await base.InitializeHandlerAsync();
-
-        if (_usernameHashedSecretProvider != null)
-        {
-            _digestAuth = new DigestAuthImplementation(Options.Configuration, _usernameHashedSecretProvider, _hashService, _headerService);
-        }
+        _digestAuth = digestAuth;
     }
 
     protected override async Task<AuthenticateResult> HandleAuthenticateAsync()
     {
-        if (!Request.Headers.TryGetValue(DigestAuthImplementation.AuthorizationHeaderName, out var headerValue))
+        if (!Request.Headers.TryGetValue(Consts.AuthorizationHeaderName, out var headerValue))
         {
             return AuthenticateResult.NoResult();
         }
 
-        if (!DigestChallengeResponse.TryParse(headerValue, out var challengeResponse))
+        DigestValue? digestValue;
+        try
+        {
+            var digestDict = _headerService.ParseDigestHeaderValue(headerValue);
+            digestValue = new DigestValue(digestDict[Consts.RealmNaming],
+                digestDict[Consts.UriNaming],
+                digestDict[Consts.UserNameNaming],
+                digestDict[Consts.NonceNaming],
+                digestDict[Consts.NonceCounterNaming],
+                digestDict[Consts.ClientNonceNaming],
+                digestDict[Consts.ResponseNaming]);
+        }
+        catch (Exception)
         {
             return AuthenticateResult.NoResult();
         }
 
-        string validatedUsername = await _digestAuth.ValidateChallangeAsync(challengeResponse, Request.Method);
+        await _digestAuth.EnsureDigestValueValid(digestValue, Request.Method);
 
-        if (string.IsNullOrEmpty(validatedUsername))
-        {
-            return AuthenticateResult.NoResult();
-        }
-
-        var authenticatedUser = new AuthenticatedUser("BasicAuthentication", true, challengeResponse.Username);
-
-        var identity = new ClaimsIdentity(authenticatedUser);
-        identity.AddClaim(new Claim(DigestAuthImplementation.DigestAuthenticationClaimName, validatedUsername));
-        var principal = new ClaimsPrincipal(identity);
+        var authenticatedUser = new AuthenticatedUser(Consts.Scheme, true, digestValue.Username);
+        var principal = new ClaimsPrincipal(new ClaimsIdentity(authenticatedUser));
 
         if (_digestAuth.UseAuthenticationInfoHeader)
         {
-            Response.Headers[DigestAuthImplementation.AuthenticationInfoHeaderName] = await _digestAuth.BuildAuthInfoHeaderAsync(challengeResponse);
+            Response.Headers[Consts.AuthenticationInfoHeaderName] = await _digestAuth.GetAuthInfoHeaderAsync(digestValue);
         }
 
         return AuthenticateResult.Success(new AuthenticationTicket(principal, new AuthenticationProperties(), Scheme.Name));
@@ -77,8 +67,6 @@ internal class DigestAuthenticationHandler : AuthenticationHandler<DigestAuthent
         await base.HandleChallengeAsync(properties);
 
         if (Response.StatusCode == (int)HttpStatusCode.Unauthorized)
-        {
-            Response.Headers[DigestAuthImplementation.AuthenticateHeaderName] = _digestAuth.BuildChallengeHeader();
-        }
+            Response.Headers[Consts.AuthenticationInfoHeaderName] = _digestAuth.GetUnauthorizedDigestHeaderValue();
     }
 }

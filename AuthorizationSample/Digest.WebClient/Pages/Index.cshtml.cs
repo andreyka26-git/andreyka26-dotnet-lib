@@ -21,7 +21,6 @@ namespace Digest.Client.Pages
             _headerService = headerService;
         }
 
-
         public string UserName { get; set; }
         public string Password { get; set; }
 
@@ -43,24 +42,15 @@ namespace Digest.Client.Pages
                     throw new Exception($"First call to api without auth should return 401 Unauthorized, but it is {resp.StatusCode}");
                 }
 
-                var authHeader = resp.Headers.GetValues("WWW-Authenticate").Single();
+                var digestHeaderValue = resp.Headers.GetValues(Consts.AuthenticationInfoHeaderName).Single();
 
-                var values = authHeader.Substring("Digest".Length).Split(",");
-
-                var valuesDict = new Dictionary<string, string>();
-
-                foreach (var val in values)
-                {
-                    var keyValuePair = val.Split("=", 2);
-
-                    valuesDict.Add(keyValuePair[0].Trim(), keyValuePair[1].Trim('\"'));
-                }
+                var valuesDict = _headerService.ParseDigestHeaderValue(digestHeaderValue);
 
                 //for this simple example we don't support anything except MD5 so we don't parse it
-                Realm = valuesDict["realm"];
-                Nonce = valuesDict["nonce"];
-                Qop = valuesDict["qop"];
-                Opaque = valuesDict["opaque"];
+                Realm = valuesDict[Consts.RealmNaming];
+                Nonce = valuesDict[Consts.NonceNaming];
+                Qop = valuesDict[Consts.QopNaming];
+                Opaque = valuesDict[Consts.OpaqueNaming];
             }
 
             UserName = "andreyka26_";
@@ -76,22 +66,22 @@ namespace Digest.Client.Pages
 
             var response = _hashService.ToMd5Hash($"{a1Hash}:{nonce}:{nc}:{cnonce}:{qop}:{a2Hash}");
 
-            var parts = new (string Key, string Value, bool ShouldQuote)[] {
-                ("username", userName, true),
-                ("realm", realm, true),
-                ("nonce", nonce, true),
-                ("uri", ServerUrl, true),
-                ("qop", qop, true),
-                ("nc", nc, true),
-                ("cnonce", cnonce, true),
-                ("response", response, true),
-                ("opaque", opaque, true),
-                ("algorithm", "MD5", false),
+            var parts = new List<DigestSubItem> {
+                new DigestSubItem("username", userName, true),
+                new DigestSubItem("realm", realm, true),
+                new DigestSubItem("nonce", nonce, true),
+                new DigestSubItem("uri", ServerUrl, true),
+                new DigestSubItem("qop", qop, true),
+                new DigestSubItem("nc", nc, true),
+                new DigestSubItem("cnonce", cnonce, true),
+                new DigestSubItem("response", response, true),
+                new DigestSubItem("opaque", opaque, true),
+                new DigestSubItem("algorithm", "MD5", false),
             };
 
             using (var req = new HttpRequestMessage(HttpMethod.Get, ServerUrl))
             {
-                req.Headers.Add("Authorization", $"Digest {string.Join(", ", parts.Select(_headerService.FormatHeaderComponent))}");
+                req.Headers.Add("Authorization", _headerService.BuildDigestHeaderValue(parts));
                 var resp = await _httpClient.SendAsync(req);
 
                 Response = await resp.Content.ReadAsStringAsync();

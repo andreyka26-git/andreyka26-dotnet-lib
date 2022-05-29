@@ -1,4 +1,5 @@
-using Basic.Server.Auth;
+using Basic.Server.Application;
+using Basic.Server.Infrastructure;
 using Microsoft.AspNetCore.Authentication;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -6,8 +7,8 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllers();
 
-builder.Services.AddAuthentication("BasicAuthentication")
-                .AddScheme<AuthenticationSchemeOptions, BasicAuthenticationHandler>("BasicAuthentication", options => { });
+builder.Services.AddAuthentication(Consts.Scheme)
+                .AddScheme<AuthenticationSchemeOptions, BasicAuthenticationHandler>(Consts.Scheme, options => { });
 
 var app = builder.Build();
 
