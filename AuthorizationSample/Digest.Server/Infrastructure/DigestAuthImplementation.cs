@@ -12,15 +12,18 @@ internal class DigestAuthImplementation
     public const string DigestAuthenticationClaimName = "DIGEST_AUTHENTICATION_NAME";
 
     private const string QopMode = "auth";
+    private const string Opaque = "1f36bf2dae9ddb750a644c9994ffffe1";
     private const string NonceTimestampFormat = "yyyy-MM-dd HH:mm:ss.ffffffZ";
 
     private readonly DigestAuthenticationConfiguration _config;
     private readonly IUsernameHashedSecretProvider _usernameHashedSecretProvider;
     private readonly IHashService _hashService;
+    private readonly HeaderService _headerService;
 
     public DigestAuthImplementation(DigestAuthenticationConfiguration config,
         IUsernameHashedSecretProvider usernameHashedSecretProvider,
-        IHashService hashService)
+        IHashService hashService,
+        HeaderService headerService)
     {
         if (config == null)
         {
@@ -35,6 +38,7 @@ internal class DigestAuthImplementation
         _config = config;
         _usernameHashedSecretProvider = usernameHashedSecretProvider;
         _hashService = hashService;
+        _headerService = headerService;
     }
 
     public bool UseAuthenticationInfoHeader => _config.UseAuthenticationInfoHeader;
@@ -45,10 +49,11 @@ internal class DigestAuthImplementation
                 ("realm", _config.Realm, true),
                 ("nonce", CreateNonce(DateTime.UtcNow), true),
                 ("qop", QopMode, true),
-                ("algorithm", "MD5", false)
+                ("opaque", Opaque, true),
+                ("algorithm", "MD5", false),
             };
 
-        return "Digest " + String.Join(", ", parts.Select(FormatHeaderComponent));
+        return "Digest " + string.Join(", ", parts.Select(_headerService.FormatHeaderComponent));
     }
 
     public async Task<string> BuildAuthInfoHeaderAsync(DigestChallengeResponse response)
@@ -73,7 +78,7 @@ internal class DigestAuthImplementation
             parts = parts.Prepend(("nextnonce", CreateNonce(DateTime.UtcNow), true)).ToList();
         }
 
-        return string.Join(", ", parts.Select(FormatHeaderComponent));
+        return string.Join(", ", parts.Select(_headerService.FormatHeaderComponent));
     }
 
     public async Task<string> ValidateChallangeAsync(DigestChallengeResponse challengeResponse, string requestMethod)
@@ -92,7 +97,7 @@ internal class DigestAuthImplementation
         if (a1Hash == null)
         {
             // Username not recognised
-            return null;
+            return string.Empty;
         }
 
         var expectedHash = GenerateExpectedHash(challengeResponse, requestMethod, a1Hash);
@@ -102,17 +107,7 @@ internal class DigestAuthImplementation
             return challengeResponse.Username;
         }
 
-        return null;
-    }
-
-    private string FormatHeaderComponent((string Key, string Value, bool ShouldQuote) component)
-    {
-        if (component.ShouldQuote)
-        {
-            return $"{component.Key}=\"{component.Value}\"";
-        }
-
-        return $"{component.Key}={component.Value}";
+        return string.Empty;
     }
 
     private string GenerateExpectedHash(DigestChallengeResponse response, string requestMethod, string a1Hash)

@@ -11,6 +11,7 @@ internal class DigestAuthenticationHandler : AuthenticationHandler<DigestAuthent
 {
     private readonly IUsernameHashedSecretProvider _usernameHashedSecretProvider;
     private readonly IHashService _hashService;
+    private readonly HeaderService _headerService;
 
     private DigestAuthImplementation _digestAuth;
 
@@ -19,11 +20,13 @@ internal class DigestAuthenticationHandler : AuthenticationHandler<DigestAuthent
         UrlEncoder encoder,
         ISystemClock clock,
         IUsernameHashedSecretProvider usernameHashedSecretProvider,
-        IHashService hashService)
+        IHashService hashService,
+        HeaderService headerService)
         : base(options, logger, encoder, clock)
     {
         _usernameHashedSecretProvider = usernameHashedSecretProvider;
         _hashService = hashService;
+        _headerService = headerService;
     }
 
     protected override async Task InitializeHandlerAsync()
@@ -32,7 +35,7 @@ internal class DigestAuthenticationHandler : AuthenticationHandler<DigestAuthent
 
         if (_usernameHashedSecretProvider != null)
         {
-            _digestAuth = new DigestAuthImplementation(Options.Configuration, _usernameHashedSecretProvider, _hashService);
+            _digestAuth = new DigestAuthImplementation(Options.Configuration, _usernameHashedSecretProvider, _hashService, _headerService);
         }
     }
 
@@ -50,7 +53,7 @@ internal class DigestAuthenticationHandler : AuthenticationHandler<DigestAuthent
 
         string validatedUsername = await _digestAuth.ValidateChallangeAsync(challengeResponse, Request.Method);
 
-        if (validatedUsername == null)
+        if (string.IsNullOrEmpty(validatedUsername))
         {
             return AuthenticateResult.NoResult();
         }

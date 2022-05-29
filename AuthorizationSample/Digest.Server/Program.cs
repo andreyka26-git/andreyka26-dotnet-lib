@@ -14,6 +14,7 @@ builder.Services.AddControllers();
 // Example configuration using IUsernameHashedSecretProvider (which returns the pre-computed MD5 hash of the secret "A1")
 builder.Services.AddScoped<IUsernameHashedSecretProvider, TrivialUsernameHashedSecretProvider>();
 builder.Services.AddSingleton<IHashService, HashService>();
+builder.Services.AddSingleton<HeaderService>();
 
 var config = DigestAuthenticationConfiguration.Create("VerySecret", "some-realm", 60, true, 20);
 builder.Services.AddAuthentication("Digest")
