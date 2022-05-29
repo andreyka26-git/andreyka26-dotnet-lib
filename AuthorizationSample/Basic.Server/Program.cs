@@ -1,4 +1,4 @@
-using BasicAuth;
+using Basic.Server.Auth;
 using Microsoft.AspNetCore.Authentication;
 
 var builder = WebApplication.CreateBuilder(args);
