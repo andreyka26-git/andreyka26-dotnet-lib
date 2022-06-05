@@ -98,6 +98,7 @@ internal class DigestAuthService
         if (challengeResponse.Nonce != currentNonce)
             throw new Exception("Nonce doesn't match.");
     }
+
     private string CreateNonce(DateTime timestamp)
     {
         var sb = new StringBuilder();
