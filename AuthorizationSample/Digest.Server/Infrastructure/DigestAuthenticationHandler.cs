@@ -44,7 +44,8 @@ internal class DigestAuthenticationHandler : AuthenticationHandler<DigestAuthent
                 digestDict[Consts.NonceNaming],
                 digestDict[Consts.NonceCounterNaming],
                 digestDict[Consts.ClientNonceNaming],
-                digestDict[Consts.ResponseNaming]);
+                digestDict[Consts.ResponseNaming],
+                digestDict[Consts.OpaqueNaming]);
         }
         catch
         {

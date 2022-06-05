@@ -2,4 +2,4 @@
 
 namespace Digest.Server.Application;
 
-internal record DigestValue(string Realm, string Uri, string Username, string Nonce, string NonceCounter, string ClientNonce, string Response);
+internal record DigestValue(string Realm, string Uri, string Username, string Nonce, string NonceCounter, string ClientNonce, string Response, string Opaque);

@@ -70,6 +70,9 @@ internal class DigestAuthService
     {
         EnsureNonceValid(clientDigestValue);
 
+        if (clientDigestValue.Opaque != Consts.Opaque)
+            throw new Exception("Opaque values are not the same");
+
         var a1Hash = await _usernameHashedSecretProvider.GetA1Md5HashForUsernameAsync(clientDigestValue.Username, _options.Realm);
         var a2Hash = _hashService.ToMd5Hash($"{requestMethod}:{clientDigestValue.Uri}");
 
