@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.32112.339
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IdentityWithoutGoogle", "IdentityWithoutGoogle\IdentityWithoutGoogle.csproj", "{3E1C0A63-2018-4692-8FCD-25F3985720FB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Google", "Google\Google.csproj", "{3E1C0A63-2018-4692-8FCD-25F3985720FB}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IdentityWithGoogle", "IdentityWithGoogle\IdentityWithGoogle.csproj", "{5906D9F0-F930-418D-9B62-26896828BFF1}"
 EndProject
@@ -21,7 +21,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Digest.Server", "Digest.Ser
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Basic.WebClient", "Basic.WebClient\Basic.WebClient.csproj", "{88067AC1-46C1-409D-82E0-13EBBBD8CADF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Digest.WebClient", "Digest.WebClient\Digest.WebClient.csproj", "{296F06BA-41A9-4921-83B0-5F54F623A7AA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Digest.WebClient", "Digest.WebClient\Digest.WebClient.csproj", "{296F06BA-41A9-4921-83B0-5F54F623A7AA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IdentityServerWIthIdentity", "IdentityServerWIthIdentity\IdentityServerWIthIdentity.csproj", "{0E02AE50-E9AD-4BA0-B59E-52F1F033C985}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -69,6 +71,10 @@ Global
 		{296F06BA-41A9-4921-83B0-5F54F623A7AA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{296F06BA-41A9-4921-83B0-5F54F623A7AA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{296F06BA-41A9-4921-83B0-5F54F623A7AA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0E02AE50-E9AD-4BA0-B59E-52F1F033C985}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0E02AE50-E9AD-4BA0-B59E-52F1F033C985}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0E02AE50-E9AD-4BA0-B59E-52F1F033C985}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0E02AE50-E9AD-4BA0-B59E-52F1F033C985}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
