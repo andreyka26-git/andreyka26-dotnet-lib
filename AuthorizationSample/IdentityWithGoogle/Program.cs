@@ -6,7 +6,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 var connectionString = builder.Configuration.GetConnectionString("AuthContextConnection");
 
-builder.Services.AddDbContext<AuthContext>(options =>options.UseNpgsql(connectionString));
+builder.Services.AddDbContext<AuthContext>(options => options.UseNpgsql(connectionString));
 
 builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = false)
     .AddEntityFrameworkStores<AuthContext>();
@@ -40,5 +40,11 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapRazorPages();
+
+using (var scope = app.Services.CreateScope())
+using (var db = scope.ServiceProvider.GetRequiredService<AuthContext>())
+{
+    db.Database.Migrate();
+}
 
 app.Run();
