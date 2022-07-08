@@ -3,29 +3,29 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.32112.339
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Google", "Google\Google.csproj", "{3E1C0A63-2018-4692-8FCD-25F3985720FB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Google", "SimpleAuth\Google\Google.csproj", "{3E1C0A63-2018-4692-8FCD-25F3985720FB}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IdentityWithGoogle", "IdentityWithGoogle\IdentityWithGoogle.csproj", "{5906D9F0-F930-418D-9B62-26896828BFF1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IdentityWithGoogle", "SimpleAuth\IdentityWithGoogle\IdentityWithGoogle.csproj", "{5906D9F0-F930-418D-9B62-26896828BFF1}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Oidc.AuthorizationServerWithOpenIddict", "Oidc.AuthorizationServerWithOpenIddict\Oidc.AuthorizationServerWithOpenIddict.csproj", "{2821DDA9-2E18-4473-86A5-D08DC20C95CC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Oidc.AuthorizationServerWithOpenIddict", "OAuthAndOpenIdConnect\Oidc.AuthorizationServerWithOpenIddict\Oidc.AuthorizationServerWithOpenIddict.csproj", "{2821DDA9-2E18-4473-86A5-D08DC20C95CC}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Oidc.AuthorizationClient", "Oidc.AuthorizationClient\Oidc.AuthorizationClient.csproj", "{A889EB13-4E87-445A-8891-62DEDFC1AFBD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Oidc.AuthorizationClient", "OAuthAndOpenIdConnect\Oidc.AuthorizationClient\Oidc.AuthorizationClient.csproj", "{A889EB13-4E87-445A-8891-62DEDFC1AFBD}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Oidc.ResourceServer", "Oidc.ResourceServer\Oidc.ResourceServer.csproj", "{29751C1A-E7D1-44E3-AE42-A25A27FCA925}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Oidc.ResourceServer", "OAuthAndOpenIdConnect\Oidc.ResourceServer\Oidc.ResourceServer.csproj", "{29751C1A-E7D1-44E3-AE42-A25A27FCA925}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Oidc.SecondResourceServer", "Oidc.SecondResourceServer\Oidc.SecondResourceServer.csproj", "{A4A280BB-C86C-4A20-B813-7C72CC9F7274}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Oidc.SecondResourceServer", "OAuthAndOpenIdConnect\Oidc.SecondResourceServer\Oidc.SecondResourceServer.csproj", "{A4A280BB-C86C-4A20-B813-7C72CC9F7274}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Basic.Server", "Basic.Server\Basic.Server.csproj", "{35B3A692-47D8-4D6F-BA7D-31A4D72382BC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Basic.Server", "SimpleAuth\Basic.Server\Basic.Server.csproj", "{35B3A692-47D8-4D6F-BA7D-31A4D72382BC}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Digest.Server", "Digest.Server\Digest.Server.csproj", "{1ABACEAA-9F97-4C39-BD1D-2567B8E79CDC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Digest.Server", "SimpleAuth\Digest.Server\Digest.Server.csproj", "{1ABACEAA-9F97-4C39-BD1D-2567B8E79CDC}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Basic.WebClient", "Basic.WebClient\Basic.WebClient.csproj", "{88067AC1-46C1-409D-82E0-13EBBBD8CADF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Basic.WebClient", "SimpleAuth\Basic.WebClient\Basic.WebClient.csproj", "{88067AC1-46C1-409D-82E0-13EBBBD8CADF}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Digest.WebClient", "Digest.WebClient\Digest.WebClient.csproj", "{296F06BA-41A9-4921-83B0-5F54F623A7AA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Digest.WebClient", "SimpleAuth\Digest.WebClient\Digest.WebClient.csproj", "{296F06BA-41A9-4921-83B0-5F54F623A7AA}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IdentityServerWIthIdentity.AuthorizationServer", "IdentityServerWIthIdentity.AuthorizationServer\IdentityServerWIthIdentity.AuthorizationServer.csproj", "{0E02AE50-E9AD-4BA0-B59E-52F1F033C985}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IdentityServerWIthIdentity.AuthorizationServer", "OAuthAndOpenIdConnect\IdentityServerWIthIdentity.AuthorizationServer\IdentityServerWIthIdentity.AuthorizationServer.csproj", "{0E02AE50-E9AD-4BA0-B59E-52F1F033C985}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IdentityServerWIthIdentity.ResourceServer", "IdentityServerWIthIdentity.ResourceServer\IdentityServerWIthIdentity.ResourceServer.csproj", "{84010B72-2BE5-4C96-997D-6574632FBD11}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IdentityServerWIthIdentity.ResourceServer", "OAuthAndOpenIdConnect\IdentityServerWIthIdentity.ResourceServer\IdentityServerWIthIdentity.ResourceServer.csproj", "{84010B72-2BE5-4C96-997D-6574632FBD11}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
