@@ -3,7 +3,7 @@ using System.Reflection;
 
 namespace CsOpenGenericsInRuntime.Demos
 {
-    public class ReflectionDemo
+    public class ReflectionDemo : DemoBase
     {
         private readonly IServiceProvider _serviceProvider;
         private readonly Type[] _types;
@@ -14,14 +14,14 @@ namespace CsOpenGenericsInRuntime.Demos
             _types = Assembly.GetExecutingAssembly().GetTypes();
         }
 
-        public async Task RunAsync()
+        public override async Task RunAsync()
         {
-            var firstReq = new FirstServiceRequest();
+            var firstReq = GetFirstRequest();
 
             var service = GetServiceImplementation(firstReq);
             service.HandleAsync(firstReq);
 
-            var secondReq = new SecondServiceRequest();
+            var secondReq = GetSecondRequest();
 
             service = GetServiceImplementation(secondReq);
             service.HandleAsync(secondReq);

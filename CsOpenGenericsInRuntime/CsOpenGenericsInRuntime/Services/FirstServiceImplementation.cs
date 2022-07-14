@@ -3,7 +3,7 @@
     public class FirstServiceRequest : IServiceRequest
     {
         public string RequestName => nameof(FirstServiceRequest);
-        public string AnotherProperty { get; set; } = "Another";
+        public string AnotherProperty { get; set; } = "AnotherProperty";
     }
 
     public class FirstServiceImplementation : IService<FirstServiceRequest>
