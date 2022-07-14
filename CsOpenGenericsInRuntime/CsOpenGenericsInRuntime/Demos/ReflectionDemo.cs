@@ -1,13 +1,13 @@
 ﻿using CsOpenGenericsInRuntime.Services;
 using System.Reflection;
 
-namespace CsOpenGenericsInRuntime
+namespace CsOpenGenericsInRuntime.Demos
 {
-    public class Demo
+    public class ReflectionDemo
     {
         private readonly IServiceProvider _serviceProvider;
         private readonly Type[] _types;
-        public Demo(IServiceProvider serviceProvider)
+        public ReflectionDemo(IServiceProvider serviceProvider)
         {
             _serviceProvider = serviceProvider;
 
