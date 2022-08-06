@@ -11,5 +11,5 @@ public class ResourcesController : ControllerBase
     public IActionResult GetResources()
     {
         return Ok($"protected resources, username: {User.Identity!.Name}");
-    }
+    } 
 }
