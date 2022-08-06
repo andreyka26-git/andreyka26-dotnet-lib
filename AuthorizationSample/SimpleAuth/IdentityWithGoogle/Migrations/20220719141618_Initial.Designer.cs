@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace IdentityWithGoogle.Migrations
 {
     [DbContext(typeof(AuthContext))]
-    [Migration("20220317121644_Initial")]
+    [Migration("20220719141618_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
