@@ -180,11 +180,11 @@ namespace JwtAuth.Server.Controllers
             var expires = now.Add(TimeSpan.FromMinutes(60));
 
             var jwt = new JwtSecurityToken(
-                    issuer: "issuer",
-                    audience: "audience",
                     notBefore: now,
                     claims: userClaims,
                     expires: expires,
+                    audience: "https://localhost:7000/",
+                    issuer: "https://localhost:7000/",
                     signingCredentials: new SigningCredentials(key, SecurityAlgorithms.HmacSha256));
 
             //we don't know about thread safety of token handler

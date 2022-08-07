@@ -2,7 +2,7 @@
 {
     public class GetTokenRequest
     {
-        public string UserName { get; set; } = "andreyka26_"; 
-        public string Password { get; set; } = "mypass1";
+        public string UserName { get; set; } = Consts.UserName; 
+        public string Password { get; set; } = Consts.Password;
     }
 }

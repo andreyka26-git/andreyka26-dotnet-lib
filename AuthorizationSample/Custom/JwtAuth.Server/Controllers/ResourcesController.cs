@@ -7,7 +7,7 @@ namespace JwtAuth.Server.Controllers
     public class ResourcesController : ControllerBase
     {
         [HttpGet("api/resources")]
-        [Authorize]
+        [Authorize()]
         public IActionResult GetResources()
         {
             return Ok($"protected resources, username: {User.Identity!.Name}");
