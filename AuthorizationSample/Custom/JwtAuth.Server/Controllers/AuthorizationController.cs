@@ -60,7 +60,7 @@ namespace JwtAuth.Server.Controllers
 
         [HttpGet]
         [AllowAnonymous]
-        [Route("external-login")]
+        [Route("authorization/external-login")]
         public async Task<IActionResult> ExternalLogin(string provider, string returnUrl, CancellationToken cancellationToken)
         {
             var redirectUrl = $"https://localhost:7000/authorization/external-auth-callback?returnUrl={returnUrl}";
@@ -73,8 +73,8 @@ namespace JwtAuth.Server.Controllers
         }
 
         [HttpGet]
-        [Route("external-auth-callback")]
-        public async Task<IActionResult> ExternalLoginCallback(string returnUrl, string remoteError = "")
+        [Route("authorization/external-auth-callback")]
+        public async Task<IActionResult> ExternalLoginCallback(string returnUrl, string? remoteError = null)
         {
             var info = await _signInManager.GetExternalLoginInfoAsync();
 
