@@ -84,12 +84,8 @@ namespace JwtAuth.Server.Controllers
             }
 
             var emailClaim = info.Principal.HasClaim(c => c.Type == ClaimTypes.Email) ? info.Principal.Claims.SingleOrDefault(c => c.Type == ClaimTypes.Email).Value : string.Empty;
-            var firstNameClaim = info.Principal.HasClaim(c => c.Type == ClaimTypes.Name) ? info.Principal.Claims.SingleOrDefault(c => c.Type == ClaimTypes.Name).Value : string.Empty;
-            var givenNameClaim = info.Principal.HasClaim(c => c.Type == ClaimTypes.GivenName) ? info.Principal.Claims.SingleOrDefault(c => c.Type == ClaimTypes.GivenName).Value : string.Empty;
-
-            var name = !string.IsNullOrEmpty(givenNameClaim) ? givenNameClaim : firstNameClaim;
-
-            if (string.IsNullOrEmpty(emailClaim) || string.IsNullOrEmpty(name))
+            
+            if (string.IsNullOrEmpty(emailClaim))
             {
                 return BadRequest();
             }
@@ -105,25 +101,7 @@ namespace JwtAuth.Server.Controllers
             {
                 try
                 {
-                    user = new IdentityUser();
-
-                    await _userStore.SetUserNameAsync(user, emailClaim, CancellationToken.None);
-                    await _emailStore.SetEmailAsync(user, emailClaim, CancellationToken.None);
-
-                    var createResult = await _userManager.CreateAsync(user);
-
-                    if (!createResult.Succeeded)
-                    {
-                        throw new Exception($"User manager cannot create user.");
-                    }
-
-                    await _userManager.AddClaimAsync(user, new Claim("email", emailClaim));
-                    var result = await _userManager.AddLoginAsync(user, info);
-
-                    if (!result.Succeeded)
-                    {
-                        throw new Exception($"Cannot add external login to user.");
-                    }
+                    await CreateUserFromExternalAuthAsync(emailClaim, info);
 
                     user = await ExternalSignInAsync(emailClaim, info.LoginProvider, info.ProviderKey);
                 }
@@ -146,6 +124,29 @@ namespace JwtAuth.Server.Controllers
             string AddQueryParameter(string url, string parameter)
             {
                 return uri.Query.Length == 0 ? $"{url}?{parameter}" : $"{url}&{parameter}";
+            }
+        }
+
+        private async Task CreateUserFromExternalAuthAsync(string email, UserLoginInfo info)
+        {
+            var user = new IdentityUser();
+
+            await _userStore.SetUserNameAsync(user, email, CancellationToken.None);
+            await _emailStore.SetEmailAsync(user, email, CancellationToken.None);
+
+            var createResult = await _userManager.CreateAsync(user);
+
+            if (!createResult.Succeeded)
+            {
+                throw new Exception($"User manager cannot create user.");
+            }
+
+            await _userManager.AddClaimAsync(user, new Claim("email", email));
+            var result = await _userManager.AddLoginAsync(user, info);
+
+            if (!result.Succeeded)
+            {
+                throw new Exception($"Cannot add external login to user.");
             }
         }
 
