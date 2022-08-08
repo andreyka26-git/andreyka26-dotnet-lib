@@ -82,7 +82,17 @@ builder.Services.AddAuthentication(options =>
     options.ClientSecret = builder.Configuration["ClientSecret"];
 });
 
+builder.Services.AddCors();
+
 var app = builder.Build();
+
+app.UseCors(builder =>
+{
+    builder
+        .AllowAnyOrigin()
+        .AllowAnyMethod()
+        .AllowAnyHeader();
+});
 
 app.UseSwagger();
 app.UseSwaggerUI();
