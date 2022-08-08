@@ -1,13 +1,16 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import {Link, Routes, Route, useNavigate} from 'react-router-dom';
-
+import { useNavigate } from 'react-router-dom';
 
 function LoginPage() {
     const navigate = useNavigate();
 
     const [userName, setUserName] = useState("andreyka26_");
     const [password, setPassword] = useState("Mypass1*");
+
+    const googleReturnUrl = "http://localhost:3000/callback";
+    const provider = "Google";
+    const actionUrl = "https://localhost:7000/authorization/external-login"
 
     function handleSubmit(event) {
         event.preventDefault();
@@ -31,6 +34,13 @@ function LoginPage() {
         .catch(err => console.log(err));
     }
 
+    function handleGoogleSubmit(event) {
+        event.preventDefault();
+
+        let url = `${actionUrl}?provider=${provider}&returnUrl=${googleReturnUrl}`;
+        return axios.get(url);
+    }
+
     function handleUserNameChange(event) {
         setUserName({value: event.target.value});
     }
@@ -52,6 +62,22 @@ function LoginPage() {
                     <input type="text" value={password} onChange={handlePasswordhange} />
                 </label>
                 <input type="submit" value="Submit" />
+            </form>
+
+            <form action={actionUrl} method="get">
+                <input type="hidden" name="returnUrl" value={googleReturnUrl} />
+                <input type="hidden" name="provider" value={provider} />
+                <button type="submit">
+                    Google Working
+                </button>
+            </form>
+
+            <form onSubmit={handleGoogleSubmit}>
+                <input type="hidden" name="returnUrl" value={googleReturnUrl} />
+                <input type="hidden" name="provider" value={provider} />
+                <button type="submit">
+                    Google not Working
+                </button>
             </form>
         </div>
     );
