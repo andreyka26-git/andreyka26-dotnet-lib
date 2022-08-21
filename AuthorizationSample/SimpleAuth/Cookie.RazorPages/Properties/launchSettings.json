@@ -9,7 +9,7 @@
     }
   },
   "profiles": {
-    "Cookie": {
+    "Cookie.RazorPages": {
       "commandName": "Project",
       "dotnetRunMessages": true,
       "launchBrowser": true,
