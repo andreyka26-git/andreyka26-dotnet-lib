@@ -34,7 +34,6 @@ namespace Cookie.Pages.Account
             public string Password { get; set; } = "Mypass1*";
         }
 
-        #region snippet2
         public async Task OnGetAsync(string? returnUrl = null)
         {
             if (!string.IsNullOrEmpty(ErrorMessage))
@@ -48,9 +47,7 @@ namespace Cookie.Pages.Account
 
             ReturnUrl = returnUrl;
         }
-        #endregion
 
-        #region snippet1
         public async Task<IActionResult> OnPostAsync(string? returnUrl = null)
         {
             ReturnUrl = returnUrl;
@@ -98,7 +95,6 @@ namespace Cookie.Pages.Account
             // Something failed. Redisplay the form.
             return Page();
         }
-        #endregion
 
         private async Task<User> AuthenticateUser(string email, string password)
         {
@@ -122,7 +118,7 @@ namespace Cookie.Pages.Account
             }
         }
 
-        public string GetLocalUrl(string localUrl)
+        private string GetLocalUrl(string localUrl)
         {
             if (!Url.IsLocalUrl(localUrl))
             {
