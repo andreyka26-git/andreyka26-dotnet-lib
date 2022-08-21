@@ -1,4 +1,5 @@
-﻿namespace Cookie.RazorPages;
+﻿
+namespace Cookie.BackendOnly;
 
 public class User
 {
