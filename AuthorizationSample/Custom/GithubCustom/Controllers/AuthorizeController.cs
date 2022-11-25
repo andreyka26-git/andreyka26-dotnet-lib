@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using System.Net.Http.Headers;
 
 namespace GithubCustom.Controllers
 {
@@ -6,10 +7,12 @@ namespace GithubCustom.Controllers
     public class AuthorizeController : ControllerBase
     {
         private readonly AuthorizeService _authorizeService;
+        private readonly HttpClient _httpClient;
 
-        public AuthorizeController(AuthorizeService authorizeService)
+        public AuthorizeController(AuthorizeService authorizeService, IHttpClientFactory httpClientFactory)
         {
             _authorizeService = authorizeService;
+            _httpClient = httpClientFactory.CreateClient();
         }
 
         [HttpGet("/signin-github")]
@@ -23,10 +26,14 @@ namespace GithubCustom.Controllers
 
             var token = await _authorizeService.GetAuthTokenAsync(callback);
 
-            //do whatever needed with token
+            using var request = new HttpRequestMessage(HttpMethod.Get, "https://api.github.com/user");
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            request.Headers.UserAgent.Add(new ProductInfoHeaderValue(new ProductHeaderValue("andreyka26-git")));
 
-            // this one is triggered
-            return Ok();
+            var response = await _httpClient.SendAsync(request);
+
+            var responseJson = await response.Content.ReadAsStringAsync();
+            return Ok(responseJson);
         }
 
         [HttpPost("/signin-github")]
@@ -40,8 +47,14 @@ namespace GithubCustom.Controllers
 
             var token = await _authorizeService.GetAuthTokenAsync(callback);
 
-            //do whatever needed with token
-            return Ok();
+            using var request = new HttpRequestMessage(HttpMethod.Get, "https://api.github.com/user");
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            request.Headers.UserAgent.Add(new ProductInfoHeaderValue(new ProductHeaderValue("andreyka26-git")));
+
+            var response = await _httpClient.SendAsync(request);
+
+            var responseJson = await response.Content.ReadAsStringAsync();
+            return Ok(responseJson);
         }
     }
 }
