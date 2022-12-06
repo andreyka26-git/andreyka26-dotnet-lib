@@ -1,10 +1,8 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
+import { authenticate } from '../services/Api'
 
 function LoginPage() {
-    const navigate = useNavigate();
-
     const [userName, setUserName] = useState("andreyka26_");
     const [password, setPassword] = useState("Mypass1*");
 
@@ -12,26 +10,15 @@ function LoginPage() {
     const provider = "Google";
     const actionUrl = "https://localhost:7000/authorization/external-login"
 
-    function handleSubmit(event) {
+    async function handleSubmit(event) {
         event.preventDefault();
 
-        const loginPayload = {
-            userName: userName,
-            password: password
-        };
-        
-        axios.post("https://localhost:7000/authorization/token", loginPayload)
-        .then(response => {
-            const token = response.data.authorizationToken;
-        
-            localStorage.setItem("token", token);
-            if (token) {
-                axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
-            }
-        
-            navigate('/');
-        })
-        .catch(err => console.log(err));
+        const [token, refreshToken] = await authenticate(userName, password);
+    
+        localStorage.setItem("token", token);
+        localStorage.setItem("refreshToken", refreshToken);
+
+        window.location = `${window.location.origin}/`;
     }
 
     function handleGoogleSubmit(event) {

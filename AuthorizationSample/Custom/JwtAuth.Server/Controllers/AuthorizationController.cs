@@ -3,6 +3,7 @@ using JwtAuth.Server.Exceptions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
 using System.IdentityModel.Tokens.Jwt;
@@ -14,6 +15,7 @@ namespace JwtAuth.Server.Controllers
     [ApiController]
     public class AuthorizationController : ControllerBase
     {
+        private readonly AuthContext _authContext;
         private readonly UserManager<IdentityUser> _userManager;
         private readonly SignInManager<IdentityUser> _signInManager;
         private readonly IUserStore<IdentityUser> _userStore;
@@ -22,6 +24,7 @@ namespace JwtAuth.Server.Controllers
         private readonly IConfiguration _configuration;
 
         public AuthorizationController(UserManager<IdentityUser> userManager,
+            AuthContext authContext,
             IConfiguration configuration,
             SignInManager<IdentityUser> signInManager,
             IUserStore<IdentityUser> userStore)
@@ -29,6 +32,7 @@ namespace JwtAuth.Server.Controllers
             _userManager = userManager;
             _configuration = configuration;
             _signInManager = signInManager;
+            _authContext = authContext;
 
             _emailStore = (IUserEmailStore<IdentityUser>)userStore;
             _userStore = userStore;
@@ -53,9 +57,27 @@ namespace JwtAuth.Server.Controllers
                 return Unauthorized();
             }
 
-            var resp = GenerateAuthorizationToken(user.Id, user.UserName);
+            var resp = await GenerateAuthorizationTokenAsync(user.Id, user.UserName);
 
             return Ok(resp);
+        }
+
+        [HttpPost("authorization/refresh")]
+        public async Task<ActionResult<AuthorizationResponse>> GetAuthorizationTokenFromRefreshAsync([FromBody] RefreshTokenRequest request,
+            CancellationToken cancellationToken)
+        {
+            var now = DateTime.UtcNow;
+
+            var refreshToken = await _authContext.RefreshTokens
+                    .Include(r => r.User)
+                    .SingleOrDefaultAsync(r => r.Value == request.RefreshToken, cancellationToken);
+
+            if (refreshToken == null)
+                throw new Exception("refresh token is not found");
+
+            var response = await GenerateAuthorizationTokenAsync(refreshToken.User.Id, refreshToken.User.UserName);
+
+            return Ok(response);
         }
 
         [HttpGet]
@@ -112,7 +134,7 @@ namespace JwtAuth.Server.Controllers
                 }
             }
 
-            var token = GenerateAuthorizationToken(user.Id, user.UserName);
+            var token = await GenerateAuthorizationTokenAsync(user.Id, user.UserName);
 
             var tokenJson = JsonConvert.SerializeObject(token);
             var bytes = Encoding.UTF8.GetBytes(tokenJson);
@@ -163,7 +185,7 @@ namespace JwtAuth.Server.Controllers
             return user;
         }
 
-        private AuthorizationResponse GenerateAuthorizationToken(string userId, string userName)
+        private async Task<AuthorizationResponse> GenerateAuthorizationTokenAsync(string userId, string userName)
         {
             var now = DateTime.UtcNow;
 
@@ -191,11 +213,27 @@ namespace JwtAuth.Server.Controllers
             //we don't know about thread safety of token handler
             var encodedJwt = new JwtSecurityTokenHandler().WriteToken(jwt);
 
+            var refreshToken = await _authContext.RefreshTokens.SingleOrDefaultAsync(r => r.ApplicationUserId == userId);
+
+            if (refreshToken != null)
+            {
+                _authContext.RefreshTokens.Remove(refreshToken);
+            }
+
+            var user = await _authContext.Users.SingleOrDefaultAsync(u => u.Id == userId);
+
+            var newRefreshToken = new RefreshToken(Guid.NewGuid().ToString(), TimeSpan.FromDays(1000), userId);
+            newRefreshToken.User = user;
+
+            _authContext.RefreshTokens.Add(newRefreshToken);
+
+            await _authContext.SaveChangesAsync();
+
             var resp = new AuthorizationResponse
             {
                 UserId = userId,
                 AuthorizationToken = encodedJwt,
-                RefreshToken = string.Empty
+                RefreshToken = newRefreshToken.Value
             };
 
             return resp;
