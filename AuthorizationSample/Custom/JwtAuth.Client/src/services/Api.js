@@ -9,13 +9,15 @@ axios.interceptors.response.use(
         const originalConfig = error.config;
         const token = localStorage.getItem("token");
         
+        // if we don't have token in local storage or error is not 401 just return error and break req.
         if (!token || !isUnauthorizedError(error)) {
-            return Promise.reject(error);
+            return error;
         }
         
+        // if some request started refreshing before - collect all requests to retry later with new token
         if (isRefreshing) {     
             refreshedRequests.push(originalConfig);
-            return Promise.reject(error);
+            return error;
         }
 
         isRefreshing = true;
@@ -27,20 +29,23 @@ axios.interceptors.response.use(
 
             originalConfig.headers.Authorization = `Bearer ${newToken}`;
 
+            // retry original request
             try {
                 await axios.request(originalConfig);
             } catch(innerError) {
+                // if original req failed with 401 again - it means server returned not valid token for refresh request
                 if (isUnauthorizedError(innerError)) {
                     throw innerError;
-                }
-
-                return Promise.reject(innerError);                    
+                }                  
             }
 
-            for (let config of refreshedRequests) {
-                config.headers.Authorization = `Bearer ${newToken}`;
-                await axios.request(config);
-            }
+            // retry all requests that stuck when refreshing tokens
+            axios.all(refreshedRequests.map((req) => {
+                req.headers.Authorization = `Bearer ${newToken}`
+                return req;
+            })).catch((_) => {
+                // ignore
+            });
         } catch (err) {
             localStorage.removeItem("token");
             localStorage.removeItem("refreshToken");
@@ -100,6 +105,7 @@ export async function getResources() {
 
     const response = await axios.get("https://localhost:7000/api/resources", options);
     const data = response.data;
+    console.log(`got resources ${data}`);
 
     return data;
 }
@@ -109,6 +115,7 @@ function withAuth(headers) {
 
     if (!token) {
         window.location = `${window.location.origin}/login`;
+        return;
     }
 
     if (!headers) {
