@@ -1,7 +1,5 @@
 import axios from 'axios';
-
-let isRefreshing = false;
-let refreshedRequests = [];
+let refreshingFunc = undefined;
 
 axios.interceptors.response.use(
     (res) =>  res,
@@ -11,19 +9,15 @@ axios.interceptors.response.use(
         
         // if we don't have token in local storage or error is not 401 just return error and break req.
         if (!token || !isUnauthorizedError(error)) {
-            return error;
+            return Promise.reject(error);
         }
-        
-        // if some request started refreshing before - collect all requests to retry later with new token
-        if (isRefreshing) {     
-            refreshedRequests.push(originalConfig);
-            return error;
-        }
-
-        isRefreshing = true;
 
         try {
-            const [newToken, newRefreshToken] = await renewToken();
+            // the trick here, that `refreshingFunc` is global, e.g. 2 expired requests will get the same function pointer and await same function.
+            if (!refreshingFunc)
+                refreshingFunc = renewToken();
+                
+            const [newToken, newRefreshToken] = await refreshingFunc;
             localStorage.setItem("token", newToken);
             localStorage.setItem("refreshToken", newRefreshToken);
 
@@ -31,28 +25,20 @@ axios.interceptors.response.use(
 
             // retry original request
             try {
-                await axios.request(originalConfig);
+                return await axios.request(originalConfig);
             } catch(innerError) {
                 // if original req failed with 401 again - it means server returned not valid token for refresh request
                 if (isUnauthorizedError(innerError)) {
-                    throw innerError;
+                    return Promise.reject(innerError);
                 }                  
             }
-
-            // retry all requests that stuck when refreshing tokens
-            axios.all(refreshedRequests.map((req) => {
-                req.headers.Authorization = `Bearer ${newToken}`
-                return req;
-            })).catch((_) => {
-                // ignore
-            });
         } catch (err) {
             localStorage.removeItem("token");
             localStorage.removeItem("refreshToken");
 
             window.location = `${window.location.origin}/login`;
         } finally {
-            isRefreshing = false;
+            refreshingFunc = undefined;
         }
     },
 )
@@ -105,7 +91,6 @@ export async function getResources() {
 
     const response = await axios.get("https://localhost:7000/api/resources", options);
     const data = response.data;
-    console.log(`got resources ${data}`);
 
     return data;
 }
