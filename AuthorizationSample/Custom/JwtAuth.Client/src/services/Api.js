@@ -30,7 +30,7 @@ axios.interceptors.response.use(
             } catch(innerError) {
                 // if original req failed with 401 again - it means server returned not valid token for refresh request
                 if (isUnauthorizedError(innerError)) {
-                    return Promise.reject(innerError);
+                    throw innerError;
                 }                  
             }
         } catch (err) {
