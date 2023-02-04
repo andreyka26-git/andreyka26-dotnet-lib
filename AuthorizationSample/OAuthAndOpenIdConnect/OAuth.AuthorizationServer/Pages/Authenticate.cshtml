@@ -1,0 +1,17 @@
+﻿@page
+@model OAuth.AuthorizationServer.Pages.AuthenticateModel
+
+@*Please do not forget to add tag helper*@
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+
+@{
+}
+
+Authenticate
+
+<form action="/backend/authenticate" method="post">
+    <input name="email" value="@Model.Email"/>
+    <input name="password" value="@Model.Password" />
+
+    <input type="submit" />
+</form>
