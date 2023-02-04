@@ -8,8 +8,8 @@ namespace OAuth.AuthorizationServer.Pages
         {
         }
 
-        public string Email { get; set; } = "andriibui@gmail.com";
-        public string Password { get; set; } = "password";
+        public string Email { get; set; } = Consts.Email;
+        public string Password { get; set; } = Consts.Password;
 
         public void OnPost(string email, string password)
         {
