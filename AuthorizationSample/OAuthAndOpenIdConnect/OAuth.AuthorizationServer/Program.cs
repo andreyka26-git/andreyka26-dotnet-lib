@@ -44,6 +44,8 @@ builder.Services.AddOpenIddict()
         options.UseAspNetCore();
     });
 
+builder.Services.AddTransient<AuthorizationService>();
+
 builder.Services.AddControllers();
 builder.Services.AddRazorPages();
 

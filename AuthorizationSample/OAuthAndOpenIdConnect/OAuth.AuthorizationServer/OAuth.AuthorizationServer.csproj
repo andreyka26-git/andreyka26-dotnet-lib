@@ -12,6 +12,7 @@
     <PackageReference Include="OpenIddict.AspNetCore" Version="4.0.0" />
     <PackageReference Include="OpenIddict.EntityFrameworkCore" Version="4.0.0" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />
+    <PackageReference Include="System.Linq.Async" Version="6.0.1" />
   </ItemGroup>
 
 </Project>

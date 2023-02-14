@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authentication;
+﻿using System.Collections.Immutable;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Mvc;
@@ -10,6 +11,8 @@ using static OpenIddict.Abstractions.OpenIddictConstants;
 using System.Security.Claims;
 using Polly;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Components.Authorization;
+using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace OAuth.AuthorizationServer.Controllers
 {
@@ -19,36 +22,79 @@ namespace OAuth.AuthorizationServer.Controllers
         private readonly IOpenIddictApplicationManager _applicationManager;
         private readonly IOpenIddictAuthorizationManager _authorizationManager;
         private readonly IOpenIddictScopeManager _scopeManager;
-
+        private readonly AuthorizationService _authService;
+        
         public AuthorizationController(
             IOpenIddictApplicationManager applicationManager,
             IOpenIddictAuthorizationManager authorizationManager,
-            IOpenIddictScopeManager scopeManager)
+            IOpenIddictScopeManager scopeManager,
+            AuthorizationService authService)
         {
             _applicationManager = applicationManager;
             _authorizationManager = authorizationManager;
             _scopeManager = scopeManager;
+            _authService = authService;
         }
 
         [HttpGet("~/connect/authorize")]
         [HttpPost("~/connect/authorize")]
-        [IgnoreAntiforgeryToken]
         public async Task<IActionResult> Authorize()
         {
-            var principal = (await HttpContext.AuthenticateAsync(CookieAuthenticationDefaults.AuthenticationScheme))?.Principal;
-            if (principal is null)
+            var request = HttpContext.GetOpenIddictServerRequest() ??
+                          throw new InvalidOperationException("The OpenID Connect request cannot be retrieved.");
+
+            var parameters = Request.HasFormContentType
+                ? Request.Form.Where(parameter => parameter.Key != Parameters.Prompt)
+                : Request.Query.Where(parameter => parameter.Key != Parameters.Prompt);
+
+            var result = await HttpContext.AuthenticateAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+    
+            if (_authService.IsAuthenticated(result, request))
             {
-                return Challenge(properties: null, new[] { CookieAuthenticationDefaults.AuthenticationScheme });
+                return Challenge(properties: new AuthenticationProperties
+                {
+                    RedirectUri = Request.PathBase + Request.Path + QueryString.Create(parameters)
+                }, new[] { CookieAuthenticationDefaults.AuthenticationScheme });
             }
+            
+            var application = await _applicationManager.FindByClientIdAsync(request.ClientId) ??
+                              throw new InvalidOperationException("Details concerning the calling client application cannot be found.");
 
-            var identifier = principal.FindFirst(ClaimTypes.Email)!.Value;
+            var userId = result.Principal.FindFirst(ClaimTypes.Email)!.Value;
 
-            // Create a new identity and import a few select claims from the Steam principal.
-            var identity = new ClaimsIdentity(TokenValidationParameters.DefaultAuthenticationType);
-            identity.AddClaim(new Claim(Claims.Subject, identifier));
-            identity.AddClaim(new Claim(Claims.Name, identifier).SetDestinations(Destinations.AccessToken));
+            var authorizations = await _authorizationManager
+                .FindAsync(
+                    subject: userId,
+                    client: await _applicationManager.GetIdAsync(application),
+                    status: Statuses.Valid,
+                    type: AuthorizationTypes.Permanent,
+                    scopes: request.GetScopes())
+                .ToListAsync();
 
-            return SignIn(new ClaimsPrincipal(identity), properties: null, OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
+            if (!authorizations.Any())
+            {
+                return RedirectToPage("Consent");
+            }
+            
+            var identity = new ClaimsIdentity(
+                authenticationType: TokenValidationParameters.DefaultAuthenticationType,
+                nameType: Claims.Name,
+                roleType: Claims.Role);
+
+            identity.SetClaim(Claims.Subject, userId)
+                .SetClaim(Claims.Email, userId)
+                .SetClaim(Claims.Name, userId)
+                .SetClaims(Claims.Role, new ImmutableArray<string> { "user", "admin" });
+
+            identity.SetScopes(request.GetScopes());
+            identity.SetResources(await _scopeManager.ListResourcesAsync(identity.GetScopes()).ToListAsync());
+
+            var authorization = authorizations.Last();
+
+            identity.SetAuthorizationId(await _authorizationManager.GetIdAsync(authorization));
+            identity.SetDestinations(AuthorizationService.GetDestinations);
+
+            return SignIn(new ClaimsPrincipal(identity), OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
         }
     }
 }
