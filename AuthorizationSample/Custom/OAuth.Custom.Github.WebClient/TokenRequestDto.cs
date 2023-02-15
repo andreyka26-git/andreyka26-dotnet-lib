@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace GithubCustom
+namespace OAuth.Custom.Github.WebClient
 {
     public class TokenRequestDto
     {

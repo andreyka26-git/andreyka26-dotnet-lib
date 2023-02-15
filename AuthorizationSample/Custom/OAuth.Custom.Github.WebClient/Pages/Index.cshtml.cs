@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc.RazorPages;
 
-namespace GithubCustom.Pages
+namespace OAuth.Custom.Github.WebClient.Pages
 {
     public class IndexModel : PageModel
     {

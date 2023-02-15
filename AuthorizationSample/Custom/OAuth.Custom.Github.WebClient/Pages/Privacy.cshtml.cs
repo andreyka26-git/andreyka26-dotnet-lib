@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
-namespace GithubCustom.Pages
+namespace OAuth.Custom.Github.WebClient.Pages
 {
     public class PrivacyModel : PageModel
     {

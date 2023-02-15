@@ -41,7 +41,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cookie.BackendOnly", "Simpl
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GoogleWithoutCookies", "Custom\GoogleWithoutCookies\GoogleWithoutCookies.csproj", "{12A9D959-36E1-4F6E-AA25-3F3F4EF8DCB0}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GithubCustom", "Custom\GithubCustom\GithubCustom.csproj", "{6685D2D7-5F26-4DE0-924D-C535C0BF4BDC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OAuth.Custom.Github.WebClient", "Custom\OAuth.Custom.Github.WebClient\OAuth.Custom.Github.WebClient.csproj", "{6685D2D7-5F26-4DE0-924D-C535C0BF4BDC}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OAuth.AuthorizationServer", "OAuthAndOpenIdConnect\OAuth.AuthorizationServer\OAuth.AuthorizationServer.csproj", "{B5BCB1ED-1096-4618-916C-FD0BF47A7F23}"
 EndProject

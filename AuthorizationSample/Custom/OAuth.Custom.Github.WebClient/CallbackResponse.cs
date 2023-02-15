@@ -1,4 +1,4 @@
-﻿namespace GithubCustom
+﻿namespace OAuth.Custom.Github.WebClient
 {
     public class CallbackResponse
     {

@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System.Net.Http.Headers;
 
-namespace GithubCustom.Controllers
+namespace OAuth.Custom.Github.WebClient.Controllers
 {
     [ApiController]
     public class AuthorizeController : ControllerBase

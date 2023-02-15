@@ -3,7 +3,7 @@ using System.Net.Http.Headers;
 using System.Net.Mime;
 using System.Text;
 
-namespace GithubCustom
+namespace OAuth.Custom.Github.WebClient
 {
     public class AuthorizeService
     {

@@ -1,4 +1,4 @@
-using GithubCustom;
+using OAuth.Custom.Github.WebClient;
 
 var builder = WebApplication.CreateBuilder(args);
 
