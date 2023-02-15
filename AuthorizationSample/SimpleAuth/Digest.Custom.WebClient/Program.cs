@@ -1,5 +1,5 @@
-using Digest.Server.Application;
-using Digest.Server.Infrastructure;
+using Digest.Custom.Server.Application;
+using Digest.Custom.Server.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 

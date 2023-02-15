@@ -1,11 +1,11 @@
-﻿using Digest.Server.Application;
-using Microsoft.AspNetCore.Authentication;
+﻿using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Options;
 using System.Net;
 using System.Security.Claims;
 using System.Text.Encodings.Web;
+using Digest.Custom.Server.Application;
 
-namespace Digest.Server.Infrastructure;
+namespace Digest.Custom.Server.Infrastructure;
 
 internal class DigestAuthenticationHandler : AuthenticationHandler<DigestAuthenticationOptions>
 {

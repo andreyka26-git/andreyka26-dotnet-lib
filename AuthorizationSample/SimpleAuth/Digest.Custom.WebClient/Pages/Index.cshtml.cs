@@ -1,9 +1,9 @@
-﻿using Digest.Server.Application;
-using Digest.Server.Infrastructure;
+﻿using System.Net;
+using Digest.Custom.Server.Application;
+using Digest.Custom.Server.Infrastructure;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using System.Net;
 
-namespace Digest.Client.Pages
+namespace Digest.WebClient.Pages
 {
     public class IndexModel : PageModel
     {

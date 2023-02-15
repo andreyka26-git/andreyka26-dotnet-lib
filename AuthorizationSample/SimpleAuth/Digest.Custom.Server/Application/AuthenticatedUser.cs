@@ -1,6 +1,6 @@
 ﻿using System.Security.Principal;
 
-namespace Digest.Server.Application;
+namespace Digest.Custom.Server.Application;
 
 public class AuthenticatedUser : IIdentity
 {

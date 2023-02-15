@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Digest.Server.Controllers;
+namespace Digest.Custom.Server.Controllers;
 
 [ApiController]
 public class ResourcesController : ControllerBase

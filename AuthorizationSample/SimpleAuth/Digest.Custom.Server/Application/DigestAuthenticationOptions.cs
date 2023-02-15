@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authentication;
 
-namespace Digest.Server.Application;
+namespace Digest.Custom.Server.Application;
 
 internal class DigestAuthenticationOptions : AuthenticationSchemeOptions
 {

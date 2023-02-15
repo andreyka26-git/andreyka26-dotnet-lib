@@ -1,4 +1,4 @@
-﻿namespace Digest.Server.Application;
+﻿namespace Digest.Custom.Server.Application;
 
 public interface IUsernameHashedSecretProvider
 {

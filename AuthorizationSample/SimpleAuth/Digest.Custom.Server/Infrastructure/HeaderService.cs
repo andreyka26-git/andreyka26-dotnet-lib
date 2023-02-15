@@ -1,6 +1,6 @@
-﻿using Digest.Server.Application;
+﻿using Digest.Custom.Server.Application;
 
-namespace Digest.Server.Infrastructure;
+namespace Digest.Custom.Server.Infrastructure;
 
 public class HeaderService
 {

@@ -1,9 +1,9 @@
-﻿using Digest.Server.Application;
-using Microsoft.Extensions.Options;
+﻿using Microsoft.Extensions.Options;
 using System.Globalization;
 using System.Text;
+using Digest.Custom.Server.Application;
 
-namespace Digest.Server.Infrastructure;
+namespace Digest.Custom.Server.Infrastructure;
 
 internal class DigestAuthService
 {

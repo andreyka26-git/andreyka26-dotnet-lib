@@ -1,8 +1,8 @@
-﻿using Digest.Server.Application;
-using System.Security.Cryptography;
+﻿using System.Security.Cryptography;
 using System.Text;
+using Digest.Custom.Server.Application;
 
-namespace Digest.Server.Infrastructure;
+namespace Digest.Custom.Server.Infrastructure;
 
 public class HashService : IHashService
 {
