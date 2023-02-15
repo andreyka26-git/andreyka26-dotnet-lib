@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
-namespace GoogleAuthWithoutIdentity.Pages.Secret
+namespace Cookie.Google.Server.Pages.Secret
 {
     [Authorize]
     public class IndexModel : PageModel

@@ -1,7 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
+﻿using Microsoft.AspNetCore.Mvc.RazorPages;
 
-namespace GoogleAuthWithoutIdentity.Pages
+namespace Cookie.Google.Server.Pages
 {
     public class PrivacyModel : PageModel
     {

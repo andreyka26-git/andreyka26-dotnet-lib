@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.32112.339
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Google", "SimpleAuth\Google\Google.csproj", "{3E1C0A63-2018-4692-8FCD-25F3985720FB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cookie.Google.Server", "SimpleAuth\Cookie.Google.Server\Cookie.Google.Server.csproj", "{3E1C0A63-2018-4692-8FCD-25F3985720FB}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cookie.Identity.Google.Server", "SimpleAuth\Cookie.Identity.Google.Server\Cookie.Identity.Google.Server.csproj", "{5906D9F0-F930-418D-9B62-26896828BFF1}"
 EndProject

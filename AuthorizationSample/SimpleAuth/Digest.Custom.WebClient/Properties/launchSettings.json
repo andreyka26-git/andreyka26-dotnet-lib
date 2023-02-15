@@ -8,7 +8,7 @@
     }
   },
   "profiles": {
-    "Digest.WebClient": {
+    "Digest.Custom.WebClient": {
       "commandName": "Project",
       "dotnetRunMessages": true,
       "launchBrowser": true,

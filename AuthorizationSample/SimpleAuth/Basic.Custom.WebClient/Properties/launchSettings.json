@@ -8,7 +8,7 @@
     }
   },
   "profiles": {
-    "Basic.WebClient": {
+    "Basic.Custom.WebClient": {
       "commandName": "Project",
       "dotnetRunMessages": true,
       "launchBrowser": true,
