@@ -1,9 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
+﻿using Microsoft.AspNetCore.Mvc.RazorPages;
 using System.Net.Http.Headers;
 using System.Text;
 
-namespace Basic.WebClient.Pages
+namespace Basic.Custom.WebClient.Pages
 {
     public class IndexModel : PageModel
     {
@@ -14,8 +13,7 @@ namespace Basic.WebClient.Pages
         {
             _httpClient = factory.CreateClient();
         }
-
-
+        
         public string UserName { get; set; }
         public string Password { get; set; }
 

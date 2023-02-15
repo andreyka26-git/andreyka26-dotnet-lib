@@ -19,7 +19,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Basic.Custom.Server", "Simp
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Digest.Server", "SimpleAuth\Digest.Server\Digest.Server.csproj", "{1ABACEAA-9F97-4C39-BD1D-2567B8E79CDC}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Basic.WebClient", "SimpleAuth\Basic.WebClient\Basic.WebClient.csproj", "{88067AC1-46C1-409D-82E0-13EBBBD8CADF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Basic.Custom.WebClient", "SimpleAuth\Basic.Custom.WebClient\Basic.Custom.WebClient.csproj", "{88067AC1-46C1-409D-82E0-13EBBBD8CADF}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Digest.WebClient", "SimpleAuth\Digest.WebClient\Digest.WebClient.csproj", "{296F06BA-41A9-4921-83B0-5F54F623A7AA}"
 EndProject
