@@ -5,7 +5,7 @@ VisualStudioVersion = 17.0.32112.339
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Google", "SimpleAuth\Google\Google.csproj", "{3E1C0A63-2018-4692-8FCD-25F3985720FB}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IdentityWithGoogle", "SimpleAuth\IdentityWithGoogle\IdentityWithGoogle.csproj", "{5906D9F0-F930-418D-9B62-26896828BFF1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cookie.Identity.Google.Server", "SimpleAuth\Cookie.Identity.Google.Server\Cookie.Identity.Google.Server.csproj", "{5906D9F0-F930-418D-9B62-26896828BFF1}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Oidc.AuthorizationServerWithOpenIddict", "OAuthAndOpenIdConnect\Oidc.AuthorizationServerWithOpenIddict\Oidc.AuthorizationServerWithOpenIddict.csproj", "{2821DDA9-2E18-4473-86A5-D08DC20C95CC}"
 EndProject
@@ -15,7 +15,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Oidc.ResourceServer", "OAut
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Oidc.SecondResourceServer", "OAuthAndOpenIdConnect\Oidc.SecondResourceServer\Oidc.SecondResourceServer.csproj", "{A4A280BB-C86C-4A20-B813-7C72CC9F7274}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Basic.Server", "SimpleAuth\Basic.Server\Basic.Server.csproj", "{35B3A692-47D8-4D6F-BA7D-31A4D72382BC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Basic.Custom.Server", "SimpleAuth\Basic.Custom.Server\Basic.Custom.Server.csproj", "{35B3A692-47D8-4D6F-BA7D-31A4D72382BC}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Digest.Server", "SimpleAuth\Digest.Server\Digest.Server.csproj", "{1ABACEAA-9F97-4C39-BD1D-2567B8E79CDC}"
 EndProject
