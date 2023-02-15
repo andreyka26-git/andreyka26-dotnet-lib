@@ -43,6 +43,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OAuth.Custom.Github.WebClie
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OAuth.AuthorizationServer", "OAuthAndOpenIdConnect\OAuth.AuthorizationServer\OAuth.AuthorizationServer.csproj", "{B5BCB1ED-1096-4618-916C-FD0BF47A7F23}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OAuth.ResourceServer", "OAuthAndOpenIdConnect\OAuth.ResourceServer\OAuth.ResourceServer.csproj", "{F463EBE7-0D88-4F44-A10C-1CEF46C6D8A4}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -117,6 +119,10 @@ Global
 		{B5BCB1ED-1096-4618-916C-FD0BF47A7F23}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B5BCB1ED-1096-4618-916C-FD0BF47A7F23}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B5BCB1ED-1096-4618-916C-FD0BF47A7F23}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F463EBE7-0D88-4F44-A10C-1CEF46C6D8A4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F463EBE7-0D88-4F44-A10C-1CEF46C6D8A4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F463EBE7-0D88-4F44-A10C-1CEF46C6D8A4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F463EBE7-0D88-4F44-A10C-1CEF46C6D8A4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -139,6 +145,7 @@ Global
 		{073A8CBD-5992-441E-8A95-17867D260903} = {867C7D25-AA0A-4BF7-8405-0EA627E2567F}
 		{6685D2D7-5F26-4DE0-924D-C535C0BF4BDC} = {6B8CA3A5-34E6-4513-A4A4-761D6746E9C2}
 		{B5BCB1ED-1096-4618-916C-FD0BF47A7F23} = {BDA09C44-3188-464E-8740-8BEFA9D9606A}
+		{F463EBE7-0D88-4F44-A10C-1CEF46C6D8A4} = {BDA09C44-3188-464E-8740-8BEFA9D9606A}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {DBFC2827-773E-46E5-8AF4-59DCF62095D1}
