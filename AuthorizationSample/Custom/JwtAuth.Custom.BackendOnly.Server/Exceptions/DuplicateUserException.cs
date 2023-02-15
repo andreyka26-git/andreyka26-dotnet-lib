@@ -1,4 +1,4 @@
-﻿namespace JwtAuth.Server.Exceptions
+﻿namespace JwtAuth.Custom.BackendOnly.Server.Exceptions
 {
     public class DuplicateUserException : Exception
     {

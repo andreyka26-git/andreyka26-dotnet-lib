@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
-namespace JwtAuth.Server;
+namespace JwtAuth.Custom.BackendOnly.Server;
 
 public class AuthContext : IdentityDbContext<IdentityUser>
 {

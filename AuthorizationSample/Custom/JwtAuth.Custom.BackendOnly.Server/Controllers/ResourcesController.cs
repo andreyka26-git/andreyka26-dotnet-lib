@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace JwtAuth.Server.Controllers
+namespace JwtAuth.Custom.BackendOnly.Server.Controllers
 {
     [ApiController]
     public class ResourcesController : ControllerBase

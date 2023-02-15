@@ -1,4 +1,4 @@
-﻿namespace JwtAuth.Server.Dto
+﻿namespace JwtAuth.Custom.BackendOnly.Server.Dto
 {
     public class AuthorizationResponse
     {

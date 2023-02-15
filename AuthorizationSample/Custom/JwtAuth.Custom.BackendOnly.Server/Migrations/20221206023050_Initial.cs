@@ -4,7 +4,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
-namespace JwtAuth.Server.Migrations
+namespace JwtAuth.Custom.BackendOnly.Server.Migrations
 {
     public partial class Initial : Migration
     {

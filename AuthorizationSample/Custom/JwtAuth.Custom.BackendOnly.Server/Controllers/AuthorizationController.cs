@@ -1,6 +1,4 @@
-﻿using JwtAuth.Server.Dto;
-using JwtAuth.Server.Exceptions;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -9,8 +7,10 @@ using Newtonsoft.Json;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using JwtAuth.Custom.BackendOnly.Server.Dto;
+using JwtAuth.Custom.BackendOnly.Server.Exceptions;
 
-namespace JwtAuth.Server.Controllers
+namespace JwtAuth.Custom.BackendOnly.Server.Controllers
 {
     [ApiController]
     public class AuthorizationController : ControllerBase

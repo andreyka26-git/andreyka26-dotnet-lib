@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 
-namespace JwtAuth.Server
+namespace JwtAuth.Custom.BackendOnly.Server
 {
     public class RefreshToken
     {

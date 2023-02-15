@@ -9,7 +9,7 @@
     }
   },
   "profiles": {
-    "JwtAuth.Server": {
+    "JwtAuth.Custom.BackendOnly.Server": {
       "commandName": "Project",
       "dotnetRunMessages": true,
       "launchBrowser": true,

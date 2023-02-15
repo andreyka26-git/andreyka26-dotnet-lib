@@ -8,7 +8,7 @@
     }
   },
   "profiles": {
-    "IdentityWithoutGoogle": {
+    "Cookie.Google.Server": {
       "commandName": "Project",
       "dotnetRunMessages": true,
       "launchBrowser": true,

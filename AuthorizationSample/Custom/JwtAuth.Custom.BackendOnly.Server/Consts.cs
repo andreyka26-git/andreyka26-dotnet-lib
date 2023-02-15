@@ -1,4 +1,4 @@
-﻿namespace JwtAuth.Server
+﻿namespace JwtAuth.Custom.BackendOnly.Server
 {
     public class Consts
     {
