@@ -8,7 +8,7 @@
     }
   },
   "profiles": {
-    "IdentityServerWIthIdentity": {
+    "OpenIdConnect.IdentityServer.AuthorizationServer": {
       "commandName": "Project",
       "dotnetRunMessages": true,
       "launchBrowser": true,

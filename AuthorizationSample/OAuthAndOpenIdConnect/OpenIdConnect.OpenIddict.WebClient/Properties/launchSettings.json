@@ -8,7 +8,7 @@
     }
   },
   "profiles": {
-    "Oidc.AuthorizationClient": {
+    "OpenIdConnect.OpenIddict.WebClient": {
       "commandName": "Project",
       "dotnetRunMessages": true,
       "launchBrowser": true,
