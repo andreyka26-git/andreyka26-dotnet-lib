@@ -21,39 +21,42 @@ namespace OAuth.AuthorizationServer
 
             var manager = scope.ServiceProvider.GetRequiredService<IOpenIddictApplicationManager>();
 
-            if (await manager.FindByClientIdAsync("mvc") == null)
+            var client = await manager.FindByClientIdAsync("web-client");
+            if (client != null)
             {
-                await manager.CreateAsync(new OpenIddictApplicationDescriptor
-                {
-                    ClientId = "postman",
-                    ClientSecret = "901564A5-E7FE-42CB-B10D-61EF6A8F3654",
-                    ConsentType = ConsentTypes.Explicit,
-                    DisplayName = "Postman client application",
-                    RedirectUris =
-                    {
-                        new Uri("https://localhost:44338/callback/login/local")
-                    },
-                        PostLogoutRedirectUris =
-                    {
-                        new Uri("https://localhost:44338/callback/logout/local")
-                    },
-                        Permissions =
-                    {
-                        Permissions.Endpoints.Authorization,
-                        Permissions.Endpoints.Logout,
-                        Permissions.Endpoints.Token,
-                        Permissions.GrantTypes.AuthorizationCode,
-                        Permissions.ResponseTypes.Code,
-                        Permissions.Scopes.Email,
-                        Permissions.Scopes.Profile,
-                        Permissions.Scopes.Roles
-                    },
-                        Requirements =
-                    {
-                        Requirements.Features.ProofKeyForCodeExchange
-                    }
-                });
+                await manager.DeleteAsync(client);
             }
+
+            await manager.CreateAsync(new OpenIddictApplicationDescriptor
+            {
+                ClientId = "web-client",
+                ClientSecret = "901564A5-E7FE-42CB-B10D-61EF6A8F3654",
+                ConsentType = ConsentTypes.Explicit,
+                DisplayName = "Postman client application",
+                RedirectUris =
+                {
+                    new Uri("https://localhost:44338/callback/login/local")
+                },
+                PostLogoutRedirectUris =
+                {
+                    new Uri("https://localhost:44338/callback/logout/local")
+                },
+                Permissions =
+                {
+                    Permissions.Endpoints.Authorization,
+                    Permissions.Endpoints.Logout,
+                    Permissions.Endpoints.Token,
+                    Permissions.GrantTypes.AuthorizationCode,
+                    Permissions.ResponseTypes.Code,
+                    Permissions.Scopes.Email,
+                    Permissions.Scopes.Profile,
+                    Permissions.Scopes.Roles
+                },
+                Requirements =
+                {
+                    Requirements.Features.ProofKeyForCodeExchange
+                }
+            });
         }
     }
 }

@@ -12,13 +12,13 @@ builder.Services.AddSwaggerGen(c =>
         Type = SecuritySchemeType.OAuth2,
         Flows = new OpenApiOAuthFlows
         {
-            Implicit = new OpenApiOAuthFlow
+            AuthorizationCode = new OpenApiOAuthFlow
             {
                 AuthorizationUrl = new Uri("https://localhost:7000/connect/authorize"),
                 TokenUrl = new Uri("https://localhost:7000/connect/token"),
                 Scopes = new Dictionary<string, string>
                 {
-                    { "api://29a02307-5a1b-460c-85ba-9e9abb75e48d/Read.WeatherForecast", "Reads the Weather forecast" }
+                    { "api://resource-server", "resource server scope" }
                 }
             }
         }
@@ -28,7 +28,11 @@ builder.Services.AddSwaggerGen(c =>
 var app = builder.Build();
 
 app.UseSwagger();
-app.UseSwaggerUI();
+app.UseSwaggerUI(c =>
+{
+    c.OAuthClientId("web-client");
+    c.OAuthClientSecret("901564A5-E7FE-42CB-B10D-61EF6A8F3654");
+});
 
 app.UseHttpsRedirection();
 app.UseAuthorization();
