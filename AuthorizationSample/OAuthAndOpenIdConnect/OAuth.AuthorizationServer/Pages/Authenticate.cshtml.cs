@@ -18,14 +18,12 @@ namespace OAuth.AuthorizationServer.Pages
 
         public IActionResult OnGet(string returnUrl)
         {
-            var req = HttpContext.GetOpenIddictServerRequest();
             ReturnUrl = returnUrl;
             return Page();
         }
         
         public async Task<IActionResult> OnPostAsync(string email, string password)
         {
-            var req = HttpContext.GetOpenIddictServerRequest(); 
             if (email != Consts.Email || password != Consts.Password)
             {
                 AuthStatus = "Email or password is invalid";
