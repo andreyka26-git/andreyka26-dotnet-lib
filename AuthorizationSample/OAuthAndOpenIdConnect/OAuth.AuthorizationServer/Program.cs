@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using OAuth.AuthorizationServer;
 using static OpenIddict.Abstractions.OpenIddictConstants;
 
@@ -28,6 +29,9 @@ builder.Services.AddOpenIddict()
 
         options.AllowAuthorizationCodeFlow();
 
+        options.AddEncryptionKey(new SymmetricSecurityKey(
+            Convert.FromBase64String("DRjd/GnduI3Efzen9V9BvbNUfc/VKgXltV7Kbk9sMkY=")));
+        
         options.AddDevelopmentEncryptionCertificate()
                 .AddDevelopmentSigningCertificate();
 
