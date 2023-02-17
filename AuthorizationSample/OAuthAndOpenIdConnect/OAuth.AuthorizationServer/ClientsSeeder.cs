@@ -1,5 +1,7 @@
 ﻿using OpenIddict.Abstractions;
+using System.Globalization;
 using static OpenIddict.Abstractions.OpenIddictConstants;
+using static OpenIddict.Client.WebIntegration.OpenIddictClientWebIntegrationConstants;
 
 namespace OAuth.AuthorizationServer
 {
@@ -12,7 +14,30 @@ namespace OAuth.AuthorizationServer
             _serviceProvider = serviceProvider;
         }
 
-        public async Task AddClientsIfDoNotExist()
+        public async Task AddScopes()
+        {
+            await using var scope = _serviceProvider.CreateAsyncScope();
+            var manager = scope.ServiceProvider.GetRequiredService<IOpenIddictScopeManager>();
+
+            var apiScope = await manager.FindByNameAsync("api1");
+
+            if (apiScope != null)
+            {
+                await manager.DeleteAsync(apiScope);
+            }
+
+            await manager.CreateAsync(new OpenIddictScopeDescriptor
+            {
+                DisplayName = "Api scope",
+                Name = "api1",
+                Resources =
+                {
+                    "resource_server_1"
+                }
+            });
+        }
+
+        public async Task AddClients()
         {
             await using var scope = _serviceProvider.CreateAsyncScope();
 
@@ -35,11 +60,11 @@ namespace OAuth.AuthorizationServer
                 DisplayName = "Postman client application",
                 RedirectUris =
                 {
-                    new Uri("https://localhost:44338/callback/login/local")
+                    new Uri("https://localhost:7002/swagger/oauth2-redirect.html")
                 },
                 PostLogoutRedirectUris =
                 {
-                    new Uri("https://localhost:44338/callback/logout/local")
+                    new Uri("https://localhost:7002/resources")
                 },
                 Permissions =
                 {
@@ -50,12 +75,13 @@ namespace OAuth.AuthorizationServer
                     Permissions.ResponseTypes.Code,
                     Permissions.Scopes.Email,
                     Permissions.Scopes.Profile,
-                    Permissions.Scopes.Roles
+                    Permissions.Scopes.Roles,
+                   $"{Permissions.Prefixes.Scope}api1"
                 },
-                Requirements =
-                {
-                    Requirements.Features.ProofKeyForCodeExchange
-                }
+                //Requirements =
+                //{
+                //    Requirements.Features.ProofKeyForCodeExchange
+                //}
             });
         }
     }

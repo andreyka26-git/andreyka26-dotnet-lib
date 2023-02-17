@@ -49,7 +49,7 @@ namespace OAuth.AuthorizationServer.Controllers
 
             var result = await HttpContext.AuthenticateAsync(CookieAuthenticationDefaults.AuthenticationScheme);
     
-            if (_authService.IsAuthenticated(result, request))
+            if (!_authService.IsAuthenticated(result, request))
             {
                 return Challenge(properties: new AuthenticationProperties
                 {
@@ -73,7 +73,7 @@ namespace OAuth.AuthorizationServer.Controllers
 
             if (!authorizations.Any())
             {
-                return RedirectToPage("Consent");
+                return RedirectToPage("/Consent");
             }
             
             var identity = new ClaimsIdentity(

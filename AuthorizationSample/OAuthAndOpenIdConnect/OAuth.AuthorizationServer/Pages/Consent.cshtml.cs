@@ -9,8 +9,13 @@ public class Consent : PageModel
         
     }
 
-    public async Task OnPost(string value)
-    {
+    public async Task OnPostGrant()
+    {   
+        
+    }
+
+    public async Task OnPostDeny()
+    {   
         
     }
 }

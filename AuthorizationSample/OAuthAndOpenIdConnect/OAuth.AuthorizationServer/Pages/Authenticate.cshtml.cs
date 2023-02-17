@@ -35,7 +35,7 @@ namespace OAuth.AuthorizationServer.Pages
             var principal = new ClaimsPrincipal(
                 new List<ClaimsIdentity> 
                 {
-                    new(claims)
+                    new(claims, CookieAuthenticationDefaults.AuthenticationScheme)
                 });
 
             await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);

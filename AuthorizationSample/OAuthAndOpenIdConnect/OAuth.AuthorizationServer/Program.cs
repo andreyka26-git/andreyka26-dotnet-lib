@@ -50,7 +50,10 @@ builder.Services.AddControllers();
 builder.Services.AddRazorPages();
 
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-    .AddCookie();
+    .AddCookie(c =>
+    {
+        c.LoginPath = "/Authenticate";
+    });
 
 builder.Services.AddTransient<ClientsSeeder>();
 
@@ -62,7 +65,8 @@ var app = builder.Build();
 using (var scope = app.Services.CreateScope())
 {
     var seeder = scope.ServiceProvider.GetRequiredService<ClientsSeeder>();
-    seeder.AddClientsIfDoNotExist().GetAwaiter().GetResult();
+    seeder.AddScopes().GetAwaiter().GetResult();
+    seeder.AddClients().GetAwaiter().GetResult();
 }
 
 if (app.Environment.IsDevelopment())

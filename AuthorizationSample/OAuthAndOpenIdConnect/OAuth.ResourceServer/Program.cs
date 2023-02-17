@@ -18,9 +18,9 @@ builder.Services.AddSwaggerGen(c =>
                 TokenUrl = new Uri("https://localhost:7000/connect/token"),
                 Scopes = new Dictionary<string, string>
                 {
-                    { "api://resource-server", "resource server scope" }
+                    { "api1", "resource server scope" }
                 }
-            }
+            },
         }
     });
 });

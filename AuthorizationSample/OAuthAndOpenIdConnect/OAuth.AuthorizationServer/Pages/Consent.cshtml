@@ -1,6 +1,9 @@
 ﻿@page
 @model OAuth.AuthorizationServer.Pages.Consent
 
+@*Please do not forget to add tag helper*@
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+
 @{
     Layout = null;
 }
@@ -8,6 +11,6 @@
 Consent
 
 <form method="post">
-    <input type="submit" name="Grant" value="Grant" />
-    <input type="submit" name="Deny" value="Deny" />
+    <input type="submit" value="Grant" asp-page-handler="Grant" />
+    <input type="submit" value="Deny" asp-page-handler="Deny" />
 </form>
