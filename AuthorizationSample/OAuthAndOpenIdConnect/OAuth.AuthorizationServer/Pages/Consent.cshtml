@@ -11,6 +11,10 @@
 Consent
 
 <form method="post">
-    <input type="submit" value="Grant" asp-page-handler="Grant" />
-    <input type="submit" value="Deny" asp-page-handler="Deny" />
+    @foreach (var parameter in @Model.OAuthParameters)
+    {
+        <input type="hidden" name="@parameter.Key" value="@parameter.Value"/>
+    }
+    <input type="submit" value="Grant" asp-page-handler="Grant"/>
+    <input type="submit" value="Deny" asp-page-handler="Deny"/>
 </form>

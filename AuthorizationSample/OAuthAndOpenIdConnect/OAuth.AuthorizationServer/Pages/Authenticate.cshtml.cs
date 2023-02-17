@@ -1,4 +1,5 @@
 using System.Security.Claims;
+using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
@@ -11,16 +12,20 @@ namespace OAuth.AuthorizationServer.Pages
         public string Email { get; set; } = Consts.Email;
         public string Password { get; set; } = Consts.Password;
 
+        [BindProperty]
         public string? ReturnUrl { get; set; }
         public string AuthStatus { get; set; } = "";
 
-        public void OnGet(string returnUrl)
+        public IActionResult OnGet(string returnUrl)
         {
+            var req = HttpContext.GetOpenIddictServerRequest();
             ReturnUrl = returnUrl;
+            return Page();
         }
         
         public async Task<IActionResult> OnPostAsync(string email, string password)
         {
+            var req = HttpContext.GetOpenIddictServerRequest(); 
             if (email != Consts.Email || password != Consts.Password)
             {
                 AuthStatus = "Email or password is invalid";

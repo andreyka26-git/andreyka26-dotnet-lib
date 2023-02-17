@@ -9,6 +9,7 @@ using OpenIddict.Abstractions;
 using OpenIddict.Server.AspNetCore;
 using static OpenIddict.Abstractions.OpenIddictConstants;
 using System.Security.Claims;
+using System.Web;
 using Polly;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Components.Authorization;
@@ -43,10 +44,8 @@ namespace OAuth.AuthorizationServer.Controllers
             var request = HttpContext.GetOpenIddictServerRequest() ??
                           throw new InvalidOperationException("The OpenID Connect request cannot be retrieved.");
 
-            var parameters = Request.HasFormContentType
-                ? Request.Form.Where(parameter => parameter.Key != Parameters.Prompt)
-                : Request.Query.Where(parameter => parameter.Key != Parameters.Prompt);
-
+            var parameters = HttpContext.ParseOAuthParameters(new List<string> { Parameters.Prompt });
+            
             var result = await HttpContext.AuthenticateAsync(CookieAuthenticationDefaults.AuthenticationScheme);
     
             if (!_authService.IsAuthenticated(result, request))
@@ -73,9 +72,12 @@ namespace OAuth.AuthorizationServer.Controllers
 
             if (!authorizations.Any())
             {
-                return RedirectToPage("/Consent");
+                var consentRedirectUrl =
+                    $"/Consent{QueryString.Create(parameters)}";
+                
+                return Redirect(consentRedirectUrl);
             }
-            
+
             var identity = new ClaimsIdentity(
                 authenticationType: TokenValidationParameters.DefaultAuthenticationType,
                 nameType: Claims.Name,
@@ -84,16 +86,16 @@ namespace OAuth.AuthorizationServer.Controllers
             identity.SetClaim(Claims.Subject, userId)
                 .SetClaim(Claims.Email, userId)
                 .SetClaim(Claims.Name, userId)
-                .SetClaims(Claims.Role, new ImmutableArray<string> { "user", "admin" });
+                .SetClaims(Claims.Role, new List<string> { "user", "admin"}.ToImmutableArray());
 
             identity.SetScopes(request.GetScopes());
             identity.SetResources(await _scopeManager.ListResourcesAsync(identity.GetScopes()).ToListAsync());
-
+            
             var authorization = authorizations.Last();
-
+            
             identity.SetAuthorizationId(await _authorizationManager.GetIdAsync(authorization));
             identity.SetDestinations(AuthorizationService.GetDestinations);
-
+            
             return SignIn(new ClaimsPrincipal(identity), OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
         }
     }
