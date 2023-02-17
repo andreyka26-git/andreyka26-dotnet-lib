@@ -39,7 +39,7 @@ namespace OAuth.AuthorizationServer.Controllers
             var request = HttpContext.GetOpenIddictServerRequest() ??
                           throw new InvalidOperationException("The OpenID Connect request cannot be retrieved.");
 
-            var parameters = HttpContext.ParseOAuthParameters(new List<string> { Parameters.Prompt });
+            var parameters = _authService.ParseOAuthParameters(HttpContext, new List<string> { Parameters.Prompt });
 
             var result = await HttpContext.AuthenticateAsync(CookieAuthenticationDefaults.AuthenticationScheme);
 
@@ -47,20 +47,19 @@ namespace OAuth.AuthorizationServer.Controllers
             {
                 return Challenge(properties: new AuthenticationProperties
                 {
-                    RedirectUri = Request.PathBase + Request.Path + QueryString.Create(parameters)
+                    RedirectUri = _authService.BuildRedirectUrl(HttpContext.Request, parameters)
                 }, new[] { CookieAuthenticationDefaults.AuthenticationScheme });
             }
 
             var application = await _applicationManager.FindByClientIdAsync(request.ClientId) ??
-                              throw new InvalidOperationException(
-                                  "Details concerning the calling client application cannot be found.");
+                              throw new InvalidOperationException("Details concerning the calling client application cannot be found.");
 
-            var consentClaim = result.Principal.GetClaim("consent");
+            var consentClaim = result.Principal.GetClaim(Consts.ConsentNaming);
 
-            if (consentClaim != "Grant")
+            if (consentClaim != Consts.GrantAccessValue)
             {
-                var consentRedirectUrl =
-                    $"/Consent?returnUrl={HttpUtility.UrlEncode(Request.PathBase + Request.Path + QueryString.Create(parameters))}";
+                var returnUrl = HttpUtility.UrlEncode(_authService.BuildRedirectUrl(HttpContext.Request, parameters));
+                var consentRedirectUrl = $"/Consent?returnUrl={returnUrl}";
 
                 return Redirect(consentRedirectUrl);
             }

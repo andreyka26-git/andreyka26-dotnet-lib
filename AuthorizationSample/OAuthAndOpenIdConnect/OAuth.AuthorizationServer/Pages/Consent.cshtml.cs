@@ -22,13 +22,13 @@ public class Consent : PageModel
 
     public async Task<IActionResult> OnPostAsync(string grant)
     {
-        if (grant == "Grant")
+        if (grant == Consts.GrantAccessValue)
         {
-            var consentClaim = User.GetClaim("consent");
+            var consentClaim = User.GetClaim(Consts.ConsentNaming);
 
             if (string.IsNullOrEmpty(consentClaim))
             {
-                User.SetClaim("consent", "Grant");
+                User.SetClaim(Consts.ConsentNaming, Consts.GrantAccessValue);
                 await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, User);
             }
 

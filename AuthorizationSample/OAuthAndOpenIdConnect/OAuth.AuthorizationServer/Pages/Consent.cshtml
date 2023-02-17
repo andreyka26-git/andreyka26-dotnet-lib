@@ -1,4 +1,5 @@
 ﻿@page
+@using OAuth.AuthorizationServer
 @model OAuth.AuthorizationServer.Pages.Consent
 
 @*Please do not forget to add tag helper*@
@@ -12,6 +13,6 @@ Consent
 Redirect url: @Model.ReturnUrl
 
 <form method="post">
-    <input type="submit" name="grant" value="Grant">
-    <input type="submit" name="grant" value="Deny"/>
+    <input type="submit" name="grant" value="@Consts.GrantAccessValue">
+    <input type="submit" name="grant" value="@Consts.DenyAccessValue"/>
 </form>
