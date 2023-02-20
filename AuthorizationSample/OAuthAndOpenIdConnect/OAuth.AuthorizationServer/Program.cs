@@ -23,7 +23,6 @@ builder.Services.AddOpenIddict()
         options.SetAuthorizationEndpointUris("connect/authorize")
                 .SetLogoutEndpointUris("connect/logout")
                 .SetTokenEndpointUris("connect/token");
-                //.SetUserinfoEndpointUris("connect/userinfo");
 
         options.RegisterScopes(Scopes.Email, Scopes.Profile, Scopes.Roles);
 
@@ -38,14 +37,7 @@ builder.Services.AddOpenIddict()
         options.UseAspNetCore()
                 .EnableAuthorizationEndpointPassthrough()
                 .EnableLogoutEndpointPassthrough()
-                .EnableTokenEndpointPassthrough()
-                .EnableUserinfoEndpointPassthrough()
-                .EnableStatusCodePagesIntegration();
-    })
-    .AddValidation(options =>
-    {
-        options.UseLocalServer();
-        options.UseAspNetCore();
+                .EnableTokenEndpointPassthrough();
     });
 
 builder.Services.AddTransient<AuthorizationService>();
@@ -78,8 +70,8 @@ var app = builder.Build();
 using (var scope = app.Services.CreateScope())
 {
     var seeder = scope.ServiceProvider.GetRequiredService<ClientsSeeder>();
-    seeder.AddScopes().GetAwaiter().GetResult();
     seeder.AddClients().GetAwaiter().GetResult();
+    seeder.AddScopes().GetAwaiter().GetResult();
 }
 
 if (app.Environment.IsDevelopment())
