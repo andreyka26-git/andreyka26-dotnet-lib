@@ -1,12 +1,12 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Polly;
 
-namespace OAuth.AuthorizationServer
+namespace OAuth.OpenIddict.AuthorizationServer
 {
     public class ApplicationDbContext : DbContext
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
-        { 
+        {
 
         }
     }

@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace OAuth.ResourceServer.Controllers;
+namespace OAuth.OpenIddict.ResourceServer.Controllers;
 
 [ApiController]
 [Route("resources")]

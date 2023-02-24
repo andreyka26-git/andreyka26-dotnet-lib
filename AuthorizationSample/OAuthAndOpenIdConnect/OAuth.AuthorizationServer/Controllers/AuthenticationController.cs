@@ -5,7 +5,7 @@ using System.Net.Mime;
 using System.Security.Claims;
 using System.Text;
 
-namespace OAuth.AuthorizationServer.Controllers
+namespace OAuth.OpenIddict.AuthorizationServer.Controllers
 {
     /// <summary>
     /// This is commented section for reason

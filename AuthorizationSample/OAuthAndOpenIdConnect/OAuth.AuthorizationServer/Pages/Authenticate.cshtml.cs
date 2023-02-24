@@ -4,8 +4,9 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using OAuth.OpenIddict.AuthorizationServer;
 
-namespace OAuth.AuthorizationServer.Pages
+namespace OAuth.OpenIddict.AuthorizationServer.Pages
 {
     public class AuthenticateModel : PageModel
     {
@@ -21,7 +22,7 @@ namespace OAuth.AuthorizationServer.Pages
             ReturnUrl = returnUrl;
             return Page();
         }
-        
+
         public async Task<IActionResult> OnPostAsync(string email, string password)
         {
             if (email != Consts.Email || password != Consts.Password)
@@ -36,7 +37,7 @@ namespace OAuth.AuthorizationServer.Pages
             };
 
             var principal = new ClaimsPrincipal(
-                new List<ClaimsIdentity> 
+                new List<ClaimsIdentity>
                 {
                     new(claims, CookieAuthenticationDefaults.AuthenticationScheme)
                 });

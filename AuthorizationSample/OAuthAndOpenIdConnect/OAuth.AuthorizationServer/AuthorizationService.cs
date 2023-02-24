@@ -3,14 +3,14 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Primitives;
 using OpenIddict.Abstractions;
 
-namespace OAuth.AuthorizationServer;
+namespace OAuth.OpenIddict.AuthorizationServer;
 
 public class AuthorizationService
 {
     public IDictionary<string, StringValues> ParseOAuthParameters(HttpContext httpContext, List<string>? excluding = null)
     {
         excluding ??= new List<string>();
-        
+
         var parameters = httpContext.Request.HasFormContentType
             ? httpContext.Request.Form
                 .Where(v => !excluding.Contains(v.Key))
@@ -21,20 +21,20 @@ public class AuthorizationService
 
         return parameters;
     }
-    
+
     public string BuildRedirectUrl(HttpRequest request, IDictionary<string, StringValues> oAuthParameters)
     {
         var url = request.PathBase + request.Path + QueryString.Create(oAuthParameters);
         return url;
     }
-    
+
     public bool IsAuthenticated(AuthenticateResult authenticateResult, OpenIddictRequest request)
     {
         if (!authenticateResult.Succeeded)
         {
             return false;
         }
-        
+
         if (request.MaxAge.HasValue && authenticateResult.Properties != null)
         {
             var maxAgeSeconds = TimeSpan.FromSeconds(request.MaxAge.Value);
@@ -49,7 +49,7 @@ public class AuthorizationService
 
         return true;
     }
-    
+
     public static List<string> GetDestinations(Claim claim)
     {
         var destinations = new List<string>();

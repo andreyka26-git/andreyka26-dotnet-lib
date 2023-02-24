@@ -3,7 +3,7 @@ using System.Globalization;
 using static OpenIddict.Abstractions.OpenIddictConstants;
 using static OpenIddict.Client.WebIntegration.OpenIddictClientWebIntegrationConstants;
 
-namespace OAuth.AuthorizationServer
+namespace OAuth.OpenIddict.AuthorizationServer
 {
     public class ClientsSeeder
     {

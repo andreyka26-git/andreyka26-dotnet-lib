@@ -10,7 +10,7 @@ using System.Security.Claims;
 using System.Web;
 using Microsoft.AspNetCore.Authentication.Cookies;
 
-namespace OAuth.AuthorizationServer.Controllers
+namespace OAuth.OpenIddict.AuthorizationServer.Controllers
 {
     [ApiController]
     public class AuthorizationController : Controller
@@ -91,12 +91,12 @@ namespace OAuth.AuthorizationServer.Controllers
 
             if (!request.IsAuthorizationCodeGrantType() && !request.IsRefreshTokenGrantType())
                 throw new InvalidOperationException("The specified grant type is not supported.");
-            
+
             var result =
                 await HttpContext.AuthenticateAsync(OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
 
             var userId = result.Principal.GetClaim(Claims.Subject);
-                
+
             if (string.IsNullOrEmpty(userId))
             {
                 return Forbid(

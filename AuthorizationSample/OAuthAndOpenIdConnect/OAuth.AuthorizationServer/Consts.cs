@@ -1,4 +1,4 @@
-﻿namespace OAuth.AuthorizationServer
+﻿namespace OAuth.OpenIddict.AuthorizationServer
 {
     public class Consts
     {
