@@ -78,26 +78,6 @@ namespace OAuth.AuthorizationServer.Controllers
 
             identity.SetScopes(request.GetScopes());
             identity.SetResources(await _scopeManager.ListResourcesAsync(identity.GetScopes()).ToListAsync());
-
-            var authorizations = await _authorizationManager
-                .FindAsync(
-                    subject: userId,
-                    client: await _applicationManager.GetIdAsync(application),
-                    status: Statuses.Valid,
-                    type: AuthorizationTypes.Permanent,
-                    scopes: request.GetScopes())
-                .ToListAsync();
-
-            var authorization = authorizations.LastOrDefault();
-
-            authorization ??= await _authorizationManager.CreateAsync(
-                identity: identity,
-                subject: userId,
-                client: await _applicationManager.GetIdAsync(application),
-                type: AuthorizationTypes.Permanent,
-                scopes: identity.GetScopes());
-
-            identity.SetAuthorizationId(await _authorizationManager.GetIdAsync(authorization));
             identity.SetDestinations(AuthorizationService.GetDestinations);
 
             return SignIn(new ClaimsPrincipal(identity), OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
