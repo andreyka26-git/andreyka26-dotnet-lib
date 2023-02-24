@@ -41,9 +41,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cookie.BackendOnly", "Simpl
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OAuth.Custom.Github.WebClient", "Custom\OAuth.Custom.Github.WebClient\OAuth.Custom.Github.WebClient.csproj", "{6685D2D7-5F26-4DE0-924D-C535C0BF4BDC}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OAuth.OpenIddict.AuthorizationServer", "OAuthAndOpenIdConnect\OAuth.AuthorizationServer\OAuth.OpenIddict.AuthorizationServer.csproj", "{B5BCB1ED-1096-4618-916C-FD0BF47A7F23}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OAuth.OpenIddict.AuthorizationServer", "OAuthAndOpenIdConnect\OAuth.OpenIddict.AuthorizationServer\OAuth.OpenIddict.AuthorizationServer.csproj", "{B5BCB1ED-1096-4618-916C-FD0BF47A7F23}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OAuth.OpenIddict.ResourceServer", "OAuthAndOpenIdConnect\OAuth.ResourceServer\OAuth.OpenIddict.ResourceServer.csproj", "{F463EBE7-0D88-4F44-A10C-1CEF46C6D8A4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OAuth.OpenIddict.ResourceServer", "OAuthAndOpenIdConnect\OAuth.OpenIddict.ResourceServer\OAuth.OpenIddict.ResourceServer.csproj", "{F463EBE7-0D88-4F44-A10C-1CEF46C6D8A4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
