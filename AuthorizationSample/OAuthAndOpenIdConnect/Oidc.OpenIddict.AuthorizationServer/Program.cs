@@ -71,7 +71,8 @@ var app = builder.Build();
 using (var scope = app.Services.CreateScope())
 {
     var seeder = scope.ServiceProvider.GetRequiredService<ClientsSeeder>();
-    seeder.AddClients().GetAwaiter().GetResult();
+    seeder.AddPostmanClient().GetAwaiter().GetResult();
+    seeder.AddWebClient().GetAwaiter().GetResult();
     seeder.AddScopes().GetAwaiter().GetResult();
 }
 
