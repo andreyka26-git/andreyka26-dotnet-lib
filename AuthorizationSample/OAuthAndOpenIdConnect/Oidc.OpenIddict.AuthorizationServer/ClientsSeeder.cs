@@ -1,4 +1,7 @@
-﻿namespace Oidc.OpenIddict.AuthorizationServer
+﻿using OpenIddict.Abstractions;
+using static OpenIddict.Abstractions.OpenIddictConstants;
+
+namespace Oidc.OpenIddict.AuthorizationServer
 {
     public class ClientsSeeder
     {
