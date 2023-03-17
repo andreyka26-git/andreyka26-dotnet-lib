@@ -16,18 +16,15 @@ namespace OAuth.OpenIddict.AuthorizationServer.Controllers
     public class AuthorizationController : Controller
     {
         private readonly IOpenIddictApplicationManager _applicationManager;
-        private readonly IOpenIddictAuthorizationManager _authorizationManager;
         private readonly IOpenIddictScopeManager _scopeManager;
         private readonly AuthorizationService _authService;
 
         public AuthorizationController(
             IOpenIddictApplicationManager applicationManager,
-            IOpenIddictAuthorizationManager authorizationManager,
             IOpenIddictScopeManager scopeManager,
             AuthorizationService authService)
         {
             _applicationManager = applicationManager;
-            _authorizationManager = authorizationManager;
             _scopeManager = scopeManager;
             _authService = authService;
         }
@@ -56,6 +53,7 @@ namespace OAuth.OpenIddict.AuthorizationServer.Controllers
 
             var consentClaim = result.Principal.GetClaim(Consts.ConsentNaming);
 
+            // it might be extended in a way that consent claim will contain list of allowed client ids.
             if (consentClaim != Consts.GrantAccessValue)
             {
                 var returnUrl = HttpUtility.UrlEncode(_authService.BuildRedirectUrl(HttpContext.Request, parameters));
@@ -101,7 +99,7 @@ namespace OAuth.OpenIddict.AuthorizationServer.Controllers
             {
                 return Forbid(
                     authenticationSchemes: OpenIddictServerAspNetCoreDefaults.AuthenticationScheme,
-                    properties: new AuthenticationProperties(new Dictionary<string, string>
+                    properties: new AuthenticationProperties(new Dictionary<string, string?>
                     {
                         [OpenIddictServerAspNetCoreConstants.Properties.Error] = Errors.InvalidGrant,
                         [OpenIddictServerAspNetCoreConstants.Properties.ErrorDescription] =

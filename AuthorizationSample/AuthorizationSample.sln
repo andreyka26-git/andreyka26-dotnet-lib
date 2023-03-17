@@ -45,7 +45,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OAuth.OpenIddict.Authorizat
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OAuth.OpenIddict.ResourceServer", "OAuthAndOpenIdConnect\OAuth.OpenIddict.ResourceServer\OAuth.OpenIddict.ResourceServer.csproj", "{F463EBE7-0D88-4F44-A10C-1CEF46C6D8A4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Oidc.OpenIddict.AuthorizationServer", "OAuthAndOpenIdConnect\Oidc.OpenIddict.AuthorizationServer\Oidc.OpenIddict.AuthorizationServer.csproj", "{FE399619-3B84-4074-A7DF-3535CBD5C246}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Oidc.OpenIddict.AuthorizationServer", "OAuthAndOpenIdConnect\Oidc.OpenIddict.AuthorizationServer\Oidc.OpenIddict.AuthorizationServer.csproj", "{FE399619-3B84-4074-A7DF-3535CBD5C246}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Oidc.OpenIddict.ResourceServer1", "OAuthAndOpenIdConnect\Oidc.OpenIddict.ResourceServer1\Oidc.OpenIddict.ResourceServer1.csproj", "{2C868F70-7F8A-49C2-AB01-6628B913D541}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -129,6 +131,10 @@ Global
 		{FE399619-3B84-4074-A7DF-3535CBD5C246}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FE399619-3B84-4074-A7DF-3535CBD5C246}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FE399619-3B84-4074-A7DF-3535CBD5C246}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2C868F70-7F8A-49C2-AB01-6628B913D541}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2C868F70-7F8A-49C2-AB01-6628B913D541}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2C868F70-7F8A-49C2-AB01-6628B913D541}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2C868F70-7F8A-49C2-AB01-6628B913D541}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -153,6 +159,7 @@ Global
 		{B5BCB1ED-1096-4618-916C-FD0BF47A7F23} = {BDA09C44-3188-464E-8740-8BEFA9D9606A}
 		{F463EBE7-0D88-4F44-A10C-1CEF46C6D8A4} = {BDA09C44-3188-464E-8740-8BEFA9D9606A}
 		{FE399619-3B84-4074-A7DF-3535CBD5C246} = {BDA09C44-3188-464E-8740-8BEFA9D9606A}
+		{2C868F70-7F8A-49C2-AB01-6628B913D541} = {BDA09C44-3188-464E-8740-8BEFA9D9606A}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {DBFC2827-773E-46E5-8AF4-59DCF62095D1}

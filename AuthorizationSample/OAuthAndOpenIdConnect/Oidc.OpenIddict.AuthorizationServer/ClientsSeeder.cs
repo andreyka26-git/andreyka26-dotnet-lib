@@ -55,7 +55,7 @@ namespace Oidc.OpenIddict.AuthorizationServer
                 ClientId = "web-client",
                 ClientSecret = "901564A5-E7FE-42CB-B10D-61EF6A8F3654",
                 ConsentType = ConsentTypes.Explicit,
-                DisplayName = "Postman client application",
+                DisplayName = "Swagger client application",
                 RedirectUris =
                 {
                     new Uri("https://localhost:7002/swagger/oauth2-redirect.html")

@@ -17,18 +17,15 @@ namespace Oidc.OpenIddict.AuthorizationServer.Controllers
     public class AuthorizationController : Controller
     {
         private readonly IOpenIddictApplicationManager _applicationManager;
-        private readonly IOpenIddictAuthorizationManager _authorizationManager;
         private readonly IOpenIddictScopeManager _scopeManager;
         private readonly AuthorizationService _authService;
 
         public AuthorizationController(
             IOpenIddictApplicationManager applicationManager,
-            IOpenIddictAuthorizationManager authorizationManager,
             IOpenIddictScopeManager scopeManager,
             AuthorizationService authService)
         {
             _applicationManager = applicationManager;
-            _authorizationManager = authorizationManager;
             _scopeManager = scopeManager;
             _authService = authService;
         }
@@ -55,8 +52,26 @@ namespace Oidc.OpenIddict.AuthorizationServer.Controllers
             var application = await _applicationManager.FindByClientIdAsync(request.ClientId) ??
                               throw new InvalidOperationException("Details concerning the calling client application cannot be found.");
 
+            var consentType = await _applicationManager.GetConsentTypeAsync(application);
+
+            // we just ignore other consent types, because they are not compliant with OAuth and OpenId Connect docs, that state that Resource Owner should grant the Client access
+            // you might also support Implicit ConsentType - where you do not require consent screen even if `prompt=consent` provided. In that case just drop this if.
+            // you might want to support External ConsentType - where you need to get created authorization first by admin to be able to log in.
+            if (consentType != ConsentTypes.Explicit)
+            {
+                return Forbid(
+                    authenticationSchemes: OpenIddictServerAspNetCoreDefaults.AuthenticationScheme,
+                    properties: new AuthenticationProperties(new Dictionary<string, string?>
+                    {
+                        [OpenIddictServerAspNetCoreConstants.Properties.Error] = Errors.InvalidClient,
+                        [OpenIddictServerAspNetCoreConstants.Properties.ErrorDescription] =
+                            "Only explicit consent clients are supported"
+                    }));
+            }
+
             var consentClaim = result.Principal.GetClaim(Consts.ConsentNaming);
 
+            // it might be extended in a way that consent claim will contain list of allowed client ids.
             if (consentClaim != Consts.GrantAccessValue)
             {
                 var returnUrl = HttpUtility.UrlEncode(_authService.BuildRedirectUrl(HttpContext.Request, parameters));
@@ -80,25 +95,6 @@ namespace Oidc.OpenIddict.AuthorizationServer.Controllers
             identity.SetScopes(request.GetScopes());
             identity.SetResources(await _scopeManager.ListResourcesAsync(identity.GetScopes()).ToListAsync());
 
-            var authorizations = await _authorizationManager
-                .FindAsync(
-                    subject: userId,
-                    client: await _applicationManager.GetIdAsync(application),
-                    status: Statuses.Valid,
-                    type: AuthorizationTypes.Permanent,
-                    scopes: request.GetScopes())
-                .ToListAsync();
-
-            var authorization = authorizations.LastOrDefault();
-
-            authorization ??= await _authorizationManager.CreateAsync(
-                identity: identity,
-                subject: userId,
-                client: await _applicationManager.GetIdAsync(application),
-                type: AuthorizationTypes.Permanent,
-                scopes: identity.GetScopes());
-
-            identity.SetAuthorizationId(await _authorizationManager.GetIdAsync(authorization));
             identity.SetDestinations(AuthorizationService.GetDestinations);
 
             return SignIn(new ClaimsPrincipal(identity), OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
@@ -122,7 +118,7 @@ namespace Oidc.OpenIddict.AuthorizationServer.Controllers
             {
                 return Forbid(
                     authenticationSchemes: OpenIddictServerAspNetCoreDefaults.AuthenticationScheme,
-                    properties: new AuthenticationProperties(new Dictionary<string, string>
+                    properties: new AuthenticationProperties(new Dictionary<string, string?>
                     {
                         [OpenIddictServerAspNetCoreConstants.Properties.Error] = Errors.InvalidGrant,
                         [OpenIddictServerAspNetCoreConstants.Properties.ErrorDescription] =
