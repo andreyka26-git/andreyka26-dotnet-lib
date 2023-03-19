@@ -7,14 +7,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cookie.Google.Server", "Sim
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cookie.Identity.Google.Server", "SimpleAuth\Cookie.Identity.Google.Server\Cookie.Identity.Google.Server.csproj", "{5906D9F0-F930-418D-9B62-26896828BFF1}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OpenIdConnect.OpenIddict.AuthorizationServer", "OAuthAndOpenIdConnect\OpenIdConnect.OpenIddict.AuthorizationServer\OpenIdConnect.OpenIddict.AuthorizationServer.csproj", "{2821DDA9-2E18-4473-86A5-D08DC20C95CC}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OpenIdConnect.OpenIddict.WebClient", "OAuthAndOpenIdConnect\OpenIdConnect.OpenIddict.WebClient\OpenIdConnect.OpenIddict.WebClient.csproj", "{A889EB13-4E87-445A-8891-62DEDFC1AFBD}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OpenIdConnect.OpenIddict.ResourceServer", "OAuthAndOpenIdConnect\OpenIdConnect.OpenIddict.ResourceServer\OpenIdConnect.OpenIddict.ResourceServer.csproj", "{29751C1A-E7D1-44E3-AE42-A25A27FCA925}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OpenIdConnect.OpenIddict.ResourceServer2", "OAuthAndOpenIdConnect\OpenIdConnect.OpenIddict.ResourceServer2\OpenIdConnect.OpenIddict.ResourceServer2.csproj", "{A4A280BB-C86C-4A20-B813-7C72CC9F7274}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Basic.Custom.Server", "SimpleAuth\Basic.Custom.Server\Basic.Custom.Server.csproj", "{35B3A692-47D8-4D6F-BA7D-31A4D72382BC}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Digest.Custom.Server", "SimpleAuth\Digest.Custom.Server\Digest.Custom.Server.csproj", "{1ABACEAA-9F97-4C39-BD1D-2567B8E79CDC}"
@@ -47,7 +39,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OAuth.OpenIddict.ResourceSe
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Oidc.OpenIddict.AuthorizationServer", "OAuthAndOpenIdConnect\Oidc.OpenIddict.AuthorizationServer\Oidc.OpenIddict.AuthorizationServer.csproj", "{FE399619-3B84-4074-A7DF-3535CBD5C246}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Oidc.OpenIddict.ResourceServer1", "OAuthAndOpenIdConnect\Oidc.OpenIddict.ResourceServer1\Oidc.OpenIddict.ResourceServer1.csproj", "{2C868F70-7F8A-49C2-AB01-6628B913D541}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Oidc.OpenIddict.ResourceServer1", "OAuthAndOpenIdConnect\Oidc.OpenIddict.ResourceServer1\Oidc.OpenIddict.ResourceServer1.csproj", "{2C868F70-7F8A-49C2-AB01-6628B913D541}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -63,22 +55,6 @@ Global
 		{5906D9F0-F930-418D-9B62-26896828BFF1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5906D9F0-F930-418D-9B62-26896828BFF1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5906D9F0-F930-418D-9B62-26896828BFF1}.Release|Any CPU.Build.0 = Release|Any CPU
-		{2821DDA9-2E18-4473-86A5-D08DC20C95CC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{2821DDA9-2E18-4473-86A5-D08DC20C95CC}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{2821DDA9-2E18-4473-86A5-D08DC20C95CC}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{2821DDA9-2E18-4473-86A5-D08DC20C95CC}.Release|Any CPU.Build.0 = Release|Any CPU
-		{A889EB13-4E87-445A-8891-62DEDFC1AFBD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{A889EB13-4E87-445A-8891-62DEDFC1AFBD}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{A889EB13-4E87-445A-8891-62DEDFC1AFBD}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{A889EB13-4E87-445A-8891-62DEDFC1AFBD}.Release|Any CPU.Build.0 = Release|Any CPU
-		{29751C1A-E7D1-44E3-AE42-A25A27FCA925}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{29751C1A-E7D1-44E3-AE42-A25A27FCA925}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{29751C1A-E7D1-44E3-AE42-A25A27FCA925}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{29751C1A-E7D1-44E3-AE42-A25A27FCA925}.Release|Any CPU.Build.0 = Release|Any CPU
-		{A4A280BB-C86C-4A20-B813-7C72CC9F7274}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{A4A280BB-C86C-4A20-B813-7C72CC9F7274}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{A4A280BB-C86C-4A20-B813-7C72CC9F7274}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{A4A280BB-C86C-4A20-B813-7C72CC9F7274}.Release|Any CPU.Build.0 = Release|Any CPU
 		{35B3A692-47D8-4D6F-BA7D-31A4D72382BC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{35B3A692-47D8-4D6F-BA7D-31A4D72382BC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{35B3A692-47D8-4D6F-BA7D-31A4D72382BC}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -142,10 +118,6 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{3E1C0A63-2018-4692-8FCD-25F3985720FB} = {867C7D25-AA0A-4BF7-8405-0EA627E2567F}
 		{5906D9F0-F930-418D-9B62-26896828BFF1} = {867C7D25-AA0A-4BF7-8405-0EA627E2567F}
-		{2821DDA9-2E18-4473-86A5-D08DC20C95CC} = {BDA09C44-3188-464E-8740-8BEFA9D9606A}
-		{A889EB13-4E87-445A-8891-62DEDFC1AFBD} = {BDA09C44-3188-464E-8740-8BEFA9D9606A}
-		{29751C1A-E7D1-44E3-AE42-A25A27FCA925} = {BDA09C44-3188-464E-8740-8BEFA9D9606A}
-		{A4A280BB-C86C-4A20-B813-7C72CC9F7274} = {BDA09C44-3188-464E-8740-8BEFA9D9606A}
 		{35B3A692-47D8-4D6F-BA7D-31A4D72382BC} = {867C7D25-AA0A-4BF7-8405-0EA627E2567F}
 		{1ABACEAA-9F97-4C39-BD1D-2567B8E79CDC} = {867C7D25-AA0A-4BF7-8405-0EA627E2567F}
 		{88067AC1-46C1-409D-82E0-13EBBBD8CADF} = {867C7D25-AA0A-4BF7-8405-0EA627E2567F}
