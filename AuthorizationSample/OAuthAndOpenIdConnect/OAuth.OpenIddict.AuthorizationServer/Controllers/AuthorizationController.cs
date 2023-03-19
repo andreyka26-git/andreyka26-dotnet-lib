@@ -36,6 +36,21 @@ namespace OAuth.OpenIddict.AuthorizationServer.Controllers
             var request = HttpContext.GetOpenIddictServerRequest() ??
                           throw new InvalidOperationException("The OpenID Connect request cannot be retrieved.");
 
+            var application = await _applicationManager.FindByClientIdAsync(request.ClientId) ??
+                              throw new InvalidOperationException("Details concerning the calling client application cannot be found.");
+
+            if (await _applicationManager.GetConsentTypeAsync(application) != ConsentTypes.Explicit)
+            {
+                return Forbid(
+                    authenticationSchemes: OpenIddictServerAspNetCoreDefaults.AuthenticationScheme,
+                    properties: new AuthenticationProperties(new Dictionary<string, string?>
+                    {
+                        [OpenIddictServerAspNetCoreConstants.Properties.Error] = Errors.InvalidClient,
+                        [OpenIddictServerAspNetCoreConstants.Properties.ErrorDescription] =
+                            "Only clients with explicit consent type are allowed."
+                    }));
+            }
+
             var parameters = _authService.ParseOAuthParameters(HttpContext, new List<string> { Parameters.Prompt });
 
             var result = await HttpContext.AuthenticateAsync(CookieAuthenticationDefaults.AuthenticationScheme);
@@ -48,14 +63,25 @@ namespace OAuth.OpenIddict.AuthorizationServer.Controllers
                 }, new[] { CookieAuthenticationDefaults.AuthenticationScheme });
             }
 
-            var application = await _applicationManager.FindByClientIdAsync(request.ClientId) ??
-                              throw new InvalidOperationException("Details concerning the calling client application cannot be found.");
+            if (request.HasPrompt(Prompts.Login))
+            {
+                await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+                await HttpContext.SignOutAsync(OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
+
+                return Challenge(properties: new AuthenticationProperties
+                {
+                    RedirectUri = _authService.BuildRedirectUrl(HttpContext.Request, parameters)
+                }, new[] { CookieAuthenticationDefaults.AuthenticationScheme });
+            }
 
             var consentClaim = result.Principal.GetClaim(Consts.ConsentNaming);
 
             // it might be extended in a way that consent claim will contain list of allowed client ids.
-            if (consentClaim != Consts.GrantAccessValue)
+            if (consentClaim != Consts.GrantAccessValue || request.HasPrompt(Prompts.Consent))
             {
+                await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+                await HttpContext.SignOutAsync(OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
+
                 var returnUrl = HttpUtility.UrlEncode(_authService.BuildRedirectUrl(HttpContext.Request, parameters));
                 var consentRedirectUrl = $"/Consent?returnUrl={returnUrl}";
 
@@ -123,7 +149,7 @@ namespace OAuth.OpenIddict.AuthorizationServer.Controllers
         }
 
         [HttpPost("~/connect/logout")]
-        public async Task<IActionResult> LogoutPost()
+        public async Task<IActionResult> Logout()
         {
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
 

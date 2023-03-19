@@ -44,7 +44,7 @@ namespace Oidc.OpenIddict.AuthorizationServer
 
             var manager = scope.ServiceProvider.GetRequiredService<IOpenIddictApplicationManager>();
 
-            var client = await manager.FindByClientIdAsync("postman");
+            var client = await manager.FindByClientIdAsync("oidc-debugger");
             if (client != null)
             {
                 await manager.DeleteAsync(client);
@@ -52,13 +52,13 @@ namespace Oidc.OpenIddict.AuthorizationServer
 
             await manager.CreateAsync(new OpenIddictApplicationDescriptor
             {
-                ClientId = "postman",
+                ClientId = "oidc-debugger",
                 ClientSecret = "901564A5-E7FE-42CB-B10D-61EF6A8F3654",
                 ConsentType = ConsentTypes.Explicit,
                 DisplayName = "Postman client application",
                 RedirectUris =
                 {
-                    new Uri("https://oauth.pstmn.io/v1/callback")
+                    new Uri("https://oidcdebugger.com/debug")
                 },
                 PostLogoutRedirectUris =
                 {
