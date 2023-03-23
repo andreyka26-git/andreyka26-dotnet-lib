@@ -10,6 +10,8 @@ using System.Security.Claims;
 using System.Web;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Oidc.OpenIddict.AuthorizationServer;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 
 namespace Oidc.OpenIddict.AuthorizationServer.Controllers
 {
@@ -37,6 +39,21 @@ namespace Oidc.OpenIddict.AuthorizationServer.Controllers
             var request = HttpContext.GetOpenIddictServerRequest() ??
                           throw new InvalidOperationException("The OpenID Connect request cannot be retrieved.");
 
+            var application = await _applicationManager.FindByClientIdAsync(request.ClientId) ??
+                              throw new InvalidOperationException("Details concerning the calling client application cannot be found.");
+
+            if (await _applicationManager.GetConsentTypeAsync(application) != ConsentTypes.Explicit)
+            {
+                return Forbid(
+                    authenticationSchemes: OpenIddictServerAspNetCoreDefaults.AuthenticationScheme,
+                    properties: new AuthenticationProperties(new Dictionary<string, string?>
+                    {
+                        [OpenIddictServerAspNetCoreConstants.Properties.Error] = Errors.InvalidClient,
+                        [OpenIddictServerAspNetCoreConstants.Properties.ErrorDescription] =
+                            "Only clients with explicit consent type are allowed."
+                    }));
+            }
+
             var parameters = _authService.ParseOAuthParameters(HttpContext, new List<string> { Parameters.Prompt });
 
             var result = await HttpContext.AuthenticateAsync(CookieAuthenticationDefaults.AuthenticationScheme);
@@ -49,31 +66,23 @@ namespace Oidc.OpenIddict.AuthorizationServer.Controllers
                 }, new[] { CookieAuthenticationDefaults.AuthenticationScheme });
             }
 
-            var application = await _applicationManager.FindByClientIdAsync(request.ClientId) ??
-                              throw new InvalidOperationException("Details concerning the calling client application cannot be found.");
-
-            var consentType = await _applicationManager.GetConsentTypeAsync(application);
-
-            // we just ignore other consent types, because they are not compliant with OAuth and OpenId Connect docs, that state that Resource Owner should grant the Client access
-            // you might also support Implicit ConsentType - where you do not require consent screen even if `prompt=consent` provided. In that case just drop this if.
-            // you might want to support External ConsentType - where you need to get created authorization first by admin to be able to log in.
-            if (consentType != ConsentTypes.Explicit)
+            if (request.HasPrompt(Prompts.Login))
             {
-                return Forbid(
-                    authenticationSchemes: OpenIddictServerAspNetCoreDefaults.AuthenticationScheme,
-                    properties: new AuthenticationProperties(new Dictionary<string, string?>
-                    {
-                        [OpenIddictServerAspNetCoreConstants.Properties.Error] = Errors.InvalidClient,
-                        [OpenIddictServerAspNetCoreConstants.Properties.ErrorDescription] =
-                            "Only explicit consent clients are supported"
-                    }));
+                await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+
+                return Challenge(properties: new AuthenticationProperties
+                {
+                    RedirectUri = _authService.BuildRedirectUrl(HttpContext.Request, parameters)
+                }, new[] { CookieAuthenticationDefaults.AuthenticationScheme });
             }
 
             var consentClaim = result.Principal.GetClaim(Consts.ConsentNaming);
 
             // it might be extended in a way that consent claim will contain list of allowed client ids.
-            if (consentClaim != Consts.GrantAccessValue)
+            if (consentClaim != Consts.GrantAccessValue || request.HasPrompt(Prompts.Consent))
             {
+                await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+
                 var returnUrl = HttpUtility.UrlEncode(_authService.BuildRedirectUrl(HttpContext.Request, parameters));
                 var consentRedirectUrl = $"/Consent?returnUrl={returnUrl}";
 
@@ -94,8 +103,7 @@ namespace Oidc.OpenIddict.AuthorizationServer.Controllers
 
             identity.SetScopes(request.GetScopes());
             identity.SetResources(await _scopeManager.ListResourcesAsync(identity.GetScopes()).ToListAsync());
-
-            identity.SetDestinations(AuthorizationService.GetDestinations);
+            identity.SetDestinations(c => AuthorizationService.GetDestinations(identity, c));
 
             return SignIn(new ClaimsPrincipal(identity), OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
         }
@@ -136,13 +144,44 @@ namespace Oidc.OpenIddict.AuthorizationServer.Controllers
                 .SetClaim(Claims.Name, userId)
                 .SetClaims(Claims.Role, new List<string> { "user", "admin" }.ToImmutableArray());
 
-            identity.SetDestinations(AuthorizationService.GetDestinations);
+
+            identity.SetDestinations(c => AuthorizationService.GetDestinations(identity, c));
 
             return SignIn(new ClaimsPrincipal(identity), OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
         }
 
+        [Authorize(AuthenticationSchemes = OpenIddictServerAspNetCoreDefaults.AuthenticationScheme)]
+        [HttpGet("~/connect/userinfo"), HttpPost("~/connect/userinfo")]
+        public async Task<IActionResult> Userinfo()
+        {
+            if (User.GetClaim(Claims.Subject) != Consts.Email)
+            {
+                return Challenge(
+                    authenticationSchemes: OpenIddictServerAspNetCoreDefaults.AuthenticationScheme,
+                    properties: new AuthenticationProperties(new Dictionary<string, string>
+                    {
+                        [OpenIddictServerAspNetCoreConstants.Properties.Error] = Errors.InvalidToken,
+                        [OpenIddictServerAspNetCoreConstants.Properties.ErrorDescription] =
+                            "The specified access token is bound to an account that no longer exists."
+                    }));
+            }
+
+            var claims = new Dictionary<string, object>(StringComparer.Ordinal)
+            {
+                // Note: the "sub" claim is a mandatory claim and must be included in the JSON response.
+                [Claims.Subject] = Consts.Email
+            };
+
+            if (User.HasScope(Scopes.Email))
+            {
+                claims[Claims.Email] = Consts.Email;
+            }
+
+            return Ok(claims);
+        }
+
         [HttpPost("~/connect/logout")]
-        public async Task<IActionResult> LogoutPost()
+        public async Task<IActionResult> Logout()
         {
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
 

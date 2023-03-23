@@ -55,9 +55,16 @@ public class AuthorizationService
     public static List<string> GetDestinations(Claim claim)
     {
         var destinations = new List<string>();
-        if (claim.Type is OpenIddictConstants.Claims.Name or OpenIddictConstants.Claims.Email)
+        
+        if (claim.Type is OpenIddictConstants.Claims.Subject)
         {
             destinations.Add(OpenIddictConstants.Destinations.AccessToken);
+            destinations.Add(OpenIddictConstants.Destinations.IdentityToken);
+        }
+
+        if (claim.Type is OpenIddictConstants.Claims.Name or OpenIddictConstants.Claims.Email)
+        {
+            destinations.Add(OpenIddictConstants.Destinations.IdentityToken);
         }
 
         return destinations;

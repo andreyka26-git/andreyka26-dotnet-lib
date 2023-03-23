@@ -35,7 +35,7 @@ namespace Oidc.OpenIddict.AuthorizationServer
             });
         }
 
-        public async Task AddPostmanClient()
+        public async Task AddOidcDebuggerClient()
         {
             await using var scope = _serviceProvider.CreateAsyncScope();
 
