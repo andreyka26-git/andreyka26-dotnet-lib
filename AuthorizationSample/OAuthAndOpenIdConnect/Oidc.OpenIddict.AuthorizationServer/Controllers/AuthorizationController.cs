@@ -144,7 +144,6 @@ namespace Oidc.OpenIddict.AuthorizationServer.Controllers
                 .SetClaim(Claims.Name, userId)
                 .SetClaims(Claims.Role, new List<string> { "user", "admin" }.ToImmutableArray());
 
-
             identity.SetDestinations(c => AuthorizationService.GetDestinations(identity, c));
 
             return SignIn(new ClaimsPrincipal(identity), OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);

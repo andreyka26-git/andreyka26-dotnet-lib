@@ -94,7 +94,7 @@ namespace OAuth.OpenIddict.AuthorizationServer.Controllers
             identity.SetScopes(request.GetScopes());
             identity.SetResources(await _scopeManager.ListResourcesAsync(identity.GetScopes()).ToListAsync());
 
-            identity.SetDestinations(AuthorizationService.GetDestinations);
+            identity.SetDestinations(c => AuthorizationService.GetDestinations(identity, c));
 
             return SignIn(new ClaimsPrincipal(identity), OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
         }
@@ -135,7 +135,7 @@ namespace OAuth.OpenIddict.AuthorizationServer.Controllers
                 .SetClaim(Claims.Name, userId)
                 .SetClaims(Claims.Role, new List<string> { "user", "admin" }.ToImmutableArray());
 
-            identity.SetDestinations(AuthorizationService.GetDestinations);
+            identity.SetDestinations(c => AuthorizationService.GetDestinations(identity, c));
 
             return SignIn(new ClaimsPrincipal(identity), OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
         }

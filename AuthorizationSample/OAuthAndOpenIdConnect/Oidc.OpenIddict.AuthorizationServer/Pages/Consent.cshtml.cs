@@ -22,19 +22,9 @@ public class Consent : PageModel
 
     public async Task<IActionResult> OnPostAsync(string grant)
     {
-        if (grant == Consts.GrantAccessValue)
-        {
-            var consentClaim = User.GetClaim(Consts.ConsentNaming);
+        User.SetClaim(Consts.ConsentNaming, grant);
 
-            if (string.IsNullOrEmpty(consentClaim))
-            {
-                User.SetClaim(Consts.ConsentNaming, Consts.GrantAccessValue);
-                await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, User);
-            }
-
-            return Redirect(ReturnUrl);
-        }
-
-        return Forbid(OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
+        await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, User);
+        return Redirect(ReturnUrl);
     }
 }
