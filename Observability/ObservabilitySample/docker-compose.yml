@@ -24,23 +24,12 @@ services:
     networks:
       - observability
 
-  alertmanager:
-    image: prom/alertmanager:latest
-    container_name: alertmanager
-    volumes:
-      - ./alertmanager/alertmanager.yml:/etc/alertmanager/alertmanager.yml
-    command:
-      - '--config.file=/etc/alertmanager/alertmanager.yml'
-    ports:
-      - "9093:9093"
-    networks:
-      - observability
-
   loki:
     image: grafana/loki:2.9.4
     container_name: loki
     volumes:
       - ./loki/loki-config.yml:/etc/loki/local-config.yaml
+      - ./loki/wal:/wal
     command: -config.file=/etc/loki/local-config.yaml
     ports:
       - "3100:3100"
@@ -52,7 +41,8 @@ services:
     container_name: promtail
     volumes:
       - ./promtail/promtail-config.yml:/etc/promtail/config.yml
-      - ./node-service:/app
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+      - /var/log:/var/log:ro
     command: -config.file=/etc/promtail/config.yml
     depends_on:
       - loki

@@ -16,7 +16,8 @@ scrape_configs:
   - job_name: node-service
     static_configs:
       - targets:
-          - node-service
+          - localhost
         labels:
           job: node-service
-          __path__: /app/*.log
+          container: node-service
+          __path__: /var/lib/docker/containers/*/*-json.log
