@@ -23,6 +23,19 @@ builder.Host.UseSerilog((context, configuration) =>
 
 // Add services
 builder.Services.AddControllers();
+
+// Add CORS
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowClient", policy =>
+    {
+        policy.WithOrigins("http://localhost:3001")
+              .AllowAnyHeader()
+              .AllowAnyMethod()
+              .AllowCredentials();
+    });
+});
+
 builder.Services.AddHttpClient<IService2Client, Service2Client>(client =>
 {
     client.BaseAddress = new Uri(builder.Configuration.GetConnectionString("Service2") ?? "http://service2:8081");
@@ -49,6 +62,9 @@ app.UseMiddleware<RequestTrackingMiddleware>();
 // Configure Prometheus metrics
 app.UseMetricServer();
 app.UseHttpMetrics();
+
+// Enable CORS
+app.UseCors("AllowClient");
 
 app.UseRouting();
 app.MapControllers();

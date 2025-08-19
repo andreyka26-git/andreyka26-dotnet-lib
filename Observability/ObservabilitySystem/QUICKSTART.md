@@ -36,3 +36,4 @@ docker-compose down -v
 - If services fail to start, check that all required ports are available
 - Increase Docker Desktop memory allocation if needed
 - Wait 2-3 minutes for all services to fully initialize
+- CORS is configured to allow requests from localhost:3001 to both services
