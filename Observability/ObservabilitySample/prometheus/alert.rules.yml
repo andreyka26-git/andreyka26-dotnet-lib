@@ -1,0 +1,19 @@
+groups:
+  - name: example-alerts
+    rules:
+      - alert: HighCPUUsage
+        expr: process_cpu_seconds_total > 0.5
+        for: 1m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High CPU usage detected on Node.js service"
+          description: "CPU usage is above 50% for more than 1 minute."
+      - alert: HighMemoryUsage
+        expr: process_resident_memory_bytes > 200000000
+        for: 1m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High Memory usage detected on Node.js service"
+          description: "Memory usage is above 200MB for more than 1 minute."

@@ -1,0 +1,13 @@
+{
+  "name": "node-service",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "prom-client": "^14.1.1",
+    "winston": "^3.10.0"
+  }
+}
