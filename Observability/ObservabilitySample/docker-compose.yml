@@ -1,6 +1,9 @@
 version: '3.8'
 
 services:
+  # Pushes logs to stdout/stderr, docker captures them in /var/lib/docker/containers/*/*-json.log
+  # Promtail watches these files and sends to Loki
+  # Exposes /metrics endpoint for collecting the metrics by Prometheus
   node-service:
     build: ./node-service
     container_name: node-service
@@ -11,6 +14,7 @@ services:
     labels:
       - "logging=promtail"
 
+  # Metrics collection / aggregation
   prometheus:
     image: prom/prometheus:latest
     container_name: prometheus
@@ -24,6 +28,7 @@ services:
     networks:
       - observability
 
+  # Logs collection / aggregation pushed by promtail
   loki:
     image: grafana/loki:2.9.4
     container_name: loki
@@ -36,6 +41,8 @@ services:
     networks:
       - observability
 
+  # Agent that ships logs from the docker container to Loki
+  # usually deployed with the app itself (to be able to access the logs)
   promtail:
     image: grafana/promtail:2.9.4
     container_name: promtail
@@ -49,6 +56,7 @@ services:
     networks:
       - observability
 
+  # Visualization tool that can show metrics & logs from Prometheus, Loki, etc.
   grafana:
     image: grafana/grafana:10.4.2
     container_name: grafana
@@ -67,6 +75,8 @@ services:
     networks:
       - observability
 
+  # Node Exporter for collecting system (hardware- and kernel-related) metrics (host machine metrics)
+  # Exposes /metrics endpoint for collecting the metrics by Prometheus
   node-exporter:
     image: prom/node-exporter:latest
     container_name: node-exporter
@@ -75,6 +85,8 @@ services:
     networks:
       - observability
 
+  # Cadvisor for collecting Container ONLY metrics
+  # Exposes /metrics endpoint for collecting the metrics by Prometheus
   cadvisor:
     image: gcr.io/cadvisor/cadvisor:v0.47.2
     container_name: cadvisor
