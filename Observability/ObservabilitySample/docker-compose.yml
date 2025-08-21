@@ -9,6 +9,10 @@ services:
     container_name: node-service
     ports:
       - "3000:3000"
+    environment:
+      # Set your Application Insights connection string here
+      # You can get this from Azure Portal > Application Insights > Overview > Connection String
+      - APPLICATIONINSIGHTS_CONNECTION_STRING=${APPLICATIONINSIGHTS_CONNECTION_STRING:-}
     networks:
       - observability
     labels:

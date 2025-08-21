@@ -2,6 +2,23 @@ const express = require('express');
 const promClient = require('prom-client');
 const os = require('os');
 const winston = require('winston');
+const appInsights = require('applicationinsights');
+
+// Configure Application Insights
+const connectionString = process.env.APPLICATIONINSIGHTS_CONNECTION_STRING;
+if (connectionString) {
+  appInsights.setup(connectionString)
+    .setAutoCollectRequests(true)
+    .setAutoCollectPerformance(true)
+    .setAutoCollectExceptions(true)
+    .setAutoCollectDependencies(true)
+    .setAutoCollectConsole(true)
+    .start();
+  
+  console.log('Application Insights configured successfully');
+} else {
+  console.log('Application Insights connection string not found. Set APPLICATIONINSIGHTS_CONNECTION_STRING environment variable.');
+}
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -73,6 +90,107 @@ setInterval(() => {
 app.get('/metrics', async (req, res) => {
   res.set('Content-Type', promClient.register.contentType);
   res.end(await promClient.register.metrics());
+});
+
+app.get('/azure/call', async (req, res) => {
+  const partner = req.query.partner || 'unknown';
+  const startTime = Date.now();
+  let status = 200;
+  
+  try {
+    // Custom telemetry for Application Insights
+    const client = appInsights.defaultClient;
+    
+    // Track requests per second counter
+    if (client) {
+      client.trackMetric({
+        name: 'azure_requests_per_second',
+        value: 1,
+        properties: {
+          partner: partner,
+          endpoint: '/azure/call'
+        }
+      });
+    }
+    
+    // Log to Application Insights
+    if (client) {
+      client.trackTrace({
+        message: `Processing Azure call request for partner: ${partner}`,
+        severity: appInsights.Contracts.SeverityLevel.Information,
+        properties: {
+          partner: partner,
+          endpoint: '/azure/call',
+          timestamp: new Date().toISOString()
+        }
+      });
+    }
+    
+    // Simulate processing time (100-1500ms)
+    const processingDelay = 100 + Math.random() * 1400;
+    await delay(processingDelay);
+    
+    // Simulate 3% error rate
+    if (Math.random() < 0.03) {
+      throw new Error('Azure service temporarily unavailable');
+    }
+    
+    const responseTime = Date.now() - startTime;
+    
+    // Track latency to Application Insights
+    if (client) {
+      client.trackMetric({
+        name: 'azure_request_latency_ms',
+        value: responseTime,
+        properties: {
+          partner: partner,
+          endpoint: '/azure/call'
+        }
+      });
+    }
+    
+    res.json({
+      success: true,
+      message: `Azure call processed successfully for ${partner}`,
+      partner: partner,
+      latency: `${responseTime}ms`,
+      timestamp: new Date().toISOString()
+    });
+    
+  } catch (err) {
+    status = 500;
+    const responseTime = Date.now() - startTime;
+    
+    // Track error metrics and logs
+    const client = appInsights.defaultClient;
+    if (client) {
+      client.trackException({
+        exception: err,
+        properties: {
+          partner: partner,
+          endpoint: '/azure/call',
+          latency: responseTime
+        }
+      });
+      
+      client.trackMetric({
+        name: 'azure_request_errors',
+        value: 1,
+        properties: {
+          partner: partner,
+          endpoint: '/azure/call',
+          error_type: 'processing_error'
+        }
+      });
+    }
+    
+    res.status(500).json({
+      error: 'Azure service error',
+      partner: partner,
+      message: err.message,
+      timestamp: new Date().toISOString()
+    });
+  }
 });
 
 
