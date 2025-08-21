@@ -18,13 +18,14 @@ const logger = winston.createLogger({
 const collectDefaultMetrics = promClient.collectDefaultMetrics;
 collectDefaultMetrics();
 
-// COUNTER: Monotonically increasing values
+// COUNTER: Monotonically increasing values, cumulative
 const httpRequestCounter = new promClient.Counter({
   name: 'http_requests_total',
   help: 'Total number of HTTP requests',
   labelNames: ['method', 'route', 'status', 'partner']
 });
 
+// COUNTER: Monotonically increasing values, cumulative
 const errorCounter = new promClient.Counter({
   name: 'application_errors_total',
   help: 'Total number of application errors',
@@ -37,36 +38,35 @@ const activePartnersGauge = new promClient.Gauge({
   help: 'Current number of active partners',
 });
 
-// Note: Memory usage gauges are provided by default metrics (process_resident_memory_bytes, etc.)
-// Removed custom memory gauge to avoid duplication
+// GAUGE: Synthetic heartbeat to ensure continuous data
+const heartbeatGauge = new promClient.Gauge({
+  name: 'service_heartbeat',
+  help: 'Service heartbeat timestamp',
+});
 
-// HISTOGRAM: Distribution of observed values (better than gauge for latency)
 const requestDurationHistogram = new promClient.Histogram({
   name: 'http_request_duration_seconds',
   help: 'Duration of HTTP requests in seconds',
-  buckets: [0.001, 0.01, 0.1, 0.5, 1, 2, 5, 10], // 1ms, 10ms, 100ms, 500ms, 1s, 2s, 5s, 10s
+  // 1ms, 10ms, 100ms, 500ms, 1s, 2s, 5s, 10s
+  buckets: [0.001, 0.01, 0.1, 0.5, 1, 2, 5, 10], 
   labelNames: ['method', 'route', 'partner']
 });
 
-// Removed Summary as Histogram is generally better for aggregation across instances
-
 const partnerStatistics = {};
 
-// Helper function to record metrics and avoid code duplication
 function recordRequestMetrics(method, route, partner, status, duration) {
   requestDurationHistogram.observe({ method, route, partner }, duration);
   httpRequestCounter.inc({ method, route, status, partner });
 }
 
-// Async delay function to replace setTimeout
 function delay(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-// Update active partners gauge periodically (using partnerStatistics as suggested)
 setInterval(() => {
-  // Update active partners gauge based on partnerStatistics
   activePartnersGauge.set(Object.keys(partnerStatistics).length);
+  // Update heartbeat to current timestamp to ensure continuous data
+  heartbeatGauge.set(Date.now() / 1000);
 }, 5000);
 
 
@@ -76,9 +76,11 @@ app.get('/metrics', async (req, res) => {
 });
 
 
-app.get('/', async (req, res) => {
+app.get('/call', async (req, res) => {
   const partner = req.query.partner || 'unknown';
   const startTime = Date.now();
+  let status = '200';
+  let error = null;
   
   try {
     // Track partner usage
@@ -102,31 +104,78 @@ app.get('/', async (req, res) => {
     await delay(processingDelay);
     
     // Success response
-    const duration = (Date.now() - startTime) / 1000;
-    recordRequestMetrics(req.method, '/', partner, '200', duration);
-    
     res.json({ 
       success: true, 
       message: `Success ${partnerStatistics[partner]}`,
       partner: partner,
-      processingTime: `${duration.toFixed(3)}s`,
+      processingTime: `${((Date.now() - startTime) / 1000).toFixed(3)}s`,
       type: isSlowRequest ? 'slow_request' : 'fast_request'
     });
     
-  } catch (error) {
-    // Error handling with proper metrics recording
-    const duration = (Date.now() - startTime) / 1000;
+  } catch (err) {
+    // Error handling
+    error = err;
+    status = '500';
     
     errorCounter.inc({ partner, error_type: 'processing_error' });
-    logger.error('Error processing request', { partner, error: error.message });
-    
-    recordRequestMetrics(req.method, '/', partner, '500', duration);
+    logger.error('Error processing request', { partner, error: err.message });
     
     res.status(500).json({ 
       error: 'Internal Server Error',
       partner: partner,
-      message: error.message
+      message: err.message
     });
+  } finally {
+    // Always record metrics regardless of success or failure
+    const duration = (Date.now() - startTime) / 1000;
+    recordRequestMetrics(req.method, '/call', partner, status, duration);
+  }
+});
+
+app.get('/nocall', async (req, res) => {
+  const partner = req.query.partner || 'unknown';
+  const startTime = Date.now();
+  let status = '200';
+  let error = null;
+  
+  try {
+    logger.info('Removing partner', { partner });
+    
+    // Remove partner from statistics
+    if (partnerStatistics[partner]) {
+      delete partnerStatistics[partner];
+      
+      res.json({ 
+        success: true, 
+        message: `Partner ${partner} removed successfully`,
+        partner: partner
+      });
+    } else {
+      res.status(404).json({ 
+        success: false, 
+        message: `Partner ${partner} not found`,
+        partner: partner
+      });
+      status = '404';
+    }
+    
+  } catch (err) {
+    // Error handling
+    error = err;
+    status = '500';
+    
+    errorCounter.inc({ partner, error_type: 'partner_removal_error' });
+    logger.error('Error removing partner', { partner, error: err.message });
+    
+    res.status(500).json({ 
+      error: 'Internal Server Error',
+      partner: partner,
+      message: err.message
+    });
+  } finally {
+    // Always record metrics regardless of success or failure
+    const duration = (Date.now() - startTime) / 1000;
+    recordRequestMetrics(req.method, '/nocall', partner, status, duration);
   }
 });
 
