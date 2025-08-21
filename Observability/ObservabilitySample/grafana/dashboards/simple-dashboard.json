@@ -23,6 +23,24 @@
       "gridPos": {"h": 8, "w": 12, "x": 0, "y": 0}
     },
     {
+      "id": 1,
+      "title": "QOS",
+      "type": "timeseries",
+      "targets": [
+        {
+          "expr": "100 * sum by (instance) (rate(http_requests_total{status=\"200\"}[5m])) / sum by (instance) (rate(http_requests_total[5m]))",
+          "legendFormat": "Total RPS",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "reqps"
+        }
+      },
+      "gridPos": {"h": 8, "w": 12, "x": 0, "y": 0}
+    },
+    {
       "id": 2,
       "title": "Active Partners",
       "type": "gauge",
