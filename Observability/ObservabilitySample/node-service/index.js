@@ -1,204 +1,69 @@
 const express = require('express');
-const promClient = require('prom-client');
-const os = require('os');
-const winston = require('winston');
-const appInsights = require('applicationinsights');
-
-// Configure Application Insights
-const connectionString = process.env.APPLICATIONINSIGHTS_CONNECTION_STRING;
-if (connectionString) {
-  appInsights.setup(connectionString)
-    .setAutoCollectRequests(true)
-    .setAutoCollectPerformance(true)
-    .setAutoCollectExceptions(true)
-    .setAutoCollectDependencies(true)
-    .setAutoCollectConsole(true)
-    .start();
-  
-  console.log('Application Insights configured successfully');
-} else {
-  console.log('Application Insights connection string not found. Set APPLICATIONINSIGHTS_CONNECTION_STRING environment variable.');
-}
+const prometheusService = require('./prometheus');
+const azureService = require('./azure');
 
 const app = express();
 const port = process.env.PORT || 3000;
 
-const logger = winston.createLogger({
-  level: 'info',
-  format: winston.format.combine(
-    winston.format.timestamp(),
-    winston.format.json()
-  ),
-  transports: [new winston.transports.Console()]
-});
-
-const collectDefaultMetrics = promClient.collectDefaultMetrics;
-collectDefaultMetrics();
-
-// COUNTER: Monotonically increasing values, cumulative
-const httpRequestCounter = new promClient.Counter({
-  name: 'http_requests_total',
-  help: 'Total number of HTTP requests',
-  labelNames: ['method', 'route', 'status', 'partner']
-});
-
-// COUNTER: Monotonically increasing values, cumulative
-const errorCounter = new promClient.Counter({
-  name: 'application_errors_total',
-  help: 'Total number of application errors',
-  labelNames: ['partner', 'error_type']
-});
-
-// GAUGE: Values that can go up and down
-const activePartnersGauge = new promClient.Gauge({
-  name: 'active_partners_current',
-  help: 'Current number of active partners',
-});
-
-// GAUGE: Synthetic heartbeat to ensure continuous data
-const heartbeatGauge = new promClient.Gauge({
-  name: 'service_heartbeat',
-  help: 'Service heartbeat timestamp',
-});
-
-const requestDurationHistogram = new promClient.Histogram({
-  name: 'http_request_duration_seconds',
-  help: 'Duration of HTTP requests in seconds',
-  // 1ms, 10ms, 100ms, 500ms, 1s, 2s, 5s, 10s
-  buckets: [0.001, 0.01, 0.1, 0.5, 1, 2, 5, 10], 
-  labelNames: ['method', 'route', 'partner']
-});
-
 const partnerStatistics = {};
-
-function recordRequestMetrics(method, route, partner, status, duration) {
-  requestDurationHistogram.observe({ method, route, partner }, duration);
-  httpRequestCounter.inc({ method, route, status, partner });
-}
 
 function delay(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
 
+// Update active partners count every 5 seconds
 setInterval(() => {
-  activePartnersGauge.set(Object.keys(partnerStatistics).length);
-  // Update heartbeat to current timestamp to ensure continuous data
-  heartbeatGauge.set(Date.now() / 1000);
+  prometheusService.updateActivePartners(Object.keys(partnerStatistics).length);
 }, 5000);
 
-
-app.get('/metrics', async (req, res) => {
-  res.set('Content-Type', promClient.register.contentType);
-  res.end(await promClient.register.metrics());
-});
-
-app.get('/azure/call', async (req, res) => {
-  const partner = req.query.partner || 'unknown';
+// Request middleware for metrics and logging
+function requestMetricsMiddleware(req, res, next) {
   const startTime = Date.now();
-  let status = 200;
-  
-  try {
-    // Custom telemetry for Application Insights
-    const client = appInsights.defaultClient;
-    
-    // Track requests per second counter
-    if (client) {
-      client.trackMetric({
-        name: 'azure_requests_per_second',
-        value: 1,
-        properties: {
-          partner: partner,
-          endpoint: '/azure/call'
-        }
-      });
-    }
-    
-    // Log to Application Insights
-    if (client) {
-      client.trackTrace({
-        message: `Processing Azure call request for partner: ${partner}`,
-        severity: appInsights.Contracts.SeverityLevel.Information,
-        properties: {
-          partner: partner,
-          endpoint: '/azure/call',
-          timestamp: new Date().toISOString()
-        }
-      });
-    }
-    
-    // Simulate processing time (100-1500ms)
-    const processingDelay = 100 + Math.random() * 1400;
-    await delay(processingDelay);
-    
-    // Simulate 3% error rate
-    if (Math.random() < 0.03) {
-      throw new Error('Azure service temporarily unavailable');
-    }
-    
-    const responseTime = Date.now() - startTime;
-    
-    // Track latency to Application Insights
-    if (client) {
-      client.trackMetric({
-        name: 'azure_request_latency_ms',
-        value: responseTime,
-        properties: {
-          partner: partner,
-          endpoint: '/azure/call'
-        }
-      });
-    }
-    
-    res.json({
-      success: true,
-      message: `Azure call processed successfully for ${partner}`,
-      partner: partner,
-      latency: `${responseTime}ms`,
-      timestamp: new Date().toISOString()
-    });
-    
-  } catch (err) {
-    status = 500;
-    const responseTime = Date.now() - startTime;
-    
-    // Track error metrics and logs
-    const client = appInsights.defaultClient;
-    if (client) {
-      client.trackException({
-        exception: err,
-        properties: {
-          partner: partner,
-          endpoint: '/azure/call',
-          latency: responseTime
-        }
-      });
-      
-      client.trackMetric({
-        name: 'azure_request_errors',
-        value: 1,
-        properties: {
-          partner: partner,
-          endpoint: '/azure/call',
-          error_type: 'processing_error'
-        }
-      });
-    }
-    
-    res.status(500).json({
-      error: 'Azure service error',
-      partner: partner,
-      message: err.message,
-      timestamp: new Date().toISOString()
-    });
-  }
-});
-
-
-app.get('/call', async (req, res) => {
   const partner = req.query.partner || 'unknown';
-  const startTime = Date.now();
+  const route = req.route ? req.route.path : req.path;
   let status = '200';
   let error = null;
+
+  try {
+    next();
+    
+  } catch (err) {
+    error = err;
+    status = '500';
+    throw err;
+  } finally {
+    // This will run after the route handler completes
+    res.on('finish', () => {
+      const duration = (Date.now() - startTime) / 1000;
+      const finalStatus = res.statusCode.toString();
+      const latency = Date.now() - startTime;
+      
+      // Report to azure
+      azureService.trackRequest(route, partner);
+
+      // Report to Prometheus
+      prometheusService.recordRequest(req.method, route, partner, finalStatus, duration);
+      
+      // Report to Azure
+      azureService.trackLatency(route, partner, latency);
+      
+      if (error || res.statusCode >= 400) {
+        prometheusService.recordError(partner, 'processing_error');
+        if (error) {
+          azureService.trackError(route, partner, error, latency);
+        }
+      }
+    });
+  }
+}
+
+app.get('/metrics', async (req, res) => {
+  res.set('Content-Type', prometheusService.getContentType());
+  res.end(await prometheusService.getMetrics());
+});
+
+app.get('/call', requestMetricsMiddleware, async (req, res) => {
+  const partner = req.query.partner || 'unknown';
   
   try {
     // Track partner usage
@@ -207,7 +72,7 @@ app.get('/call', async (req, res) => {
     }
     partnerStatistics[partner]++;
     
-    logger.info('Processing request for partner', { partner });
+    azureService.logInfo('Processing request for partner', { partner });
     
     // Simulate processing time with random delay (0-2000ms for variety)
     const processingDelay = Math.random() * 2000;
@@ -226,38 +91,26 @@ app.get('/call', async (req, res) => {
       success: true, 
       message: `Success ${partnerStatistics[partner]}`,
       partner: partner,
-      processingTime: `${((Date.now() - startTime) / 1000).toFixed(3)}s`,
+      processingTime: `${(processingDelay / 1000).toFixed(3)}s`,
       type: isSlowRequest ? 'slow_request' : 'fast_request'
     });
     
   } catch (err) {
-    // Error handling
-    error = err;
-    status = '500';
-    
-    errorCounter.inc({ partner, error_type: 'processing_error' });
-    logger.error('Error processing request', { partner, error: err.message });
+    azureService.logError('Error processing request', { partner, error: err.message });
     
     res.status(500).json({ 
       error: 'Internal Server Error',
       partner: partner,
       message: err.message
     });
-  } finally {
-    // Always record metrics regardless of success or failure
-    const duration = (Date.now() - startTime) / 1000;
-    recordRequestMetrics(req.method, '/call', partner, status, duration);
   }
 });
 
-app.get('/nocall', async (req, res) => {
+app.get('/nocall', requestMetricsMiddleware, async (req, res) => {
   const partner = req.query.partner || 'unknown';
-  const startTime = Date.now();
-  let status = '200';
-  let error = null;
   
   try {
-    logger.info('Removing partner', { partner });
+    azureService.logInfo('Removing partner', { partner });
     
     // Remove partner from statistics
     if (partnerStatistics[partner]) {
@@ -274,30 +127,41 @@ app.get('/nocall', async (req, res) => {
         message: `Partner ${partner} not found`,
         partner: partner
       });
-      status = '404';
     }
     
   } catch (err) {
-    // Error handling
-    error = err;
-    status = '500';
-    
-    errorCounter.inc({ partner, error_type: 'partner_removal_error' });
-    logger.error('Error removing partner', { partner, error: err.message });
+    azureService.logError('Error removing partner', { partner, error: err.message });
     
     res.status(500).json({ 
       error: 'Internal Server Error',
       partner: partner,
       message: err.message
     });
-  } finally {
-    // Always record metrics regardless of success or failure
-    const duration = (Date.now() - startTime) / 1000;
-    recordRequestMetrics(req.method, '/nocall', partner, status, duration);
+  }
+});
+
+app.get('/error', requestMetricsMiddleware, async (req, res) => {
+  const partner = req.query.partner || 'unknown';
+  
+  try {
+    azureService.logInfo('Intentionally triggering error for testing', { partner });
+    
+    // Always throw an error for testing purposes
+    throw new Error('This endpoint always throws an error for testing metrics and monitoring');
+    
+  } catch (err) {
+    azureService.logError('Intentional error endpoint triggered', { partner, error: err.message });
+    
+    res.status(500).json({ 
+      error: 'Intentional Server Error',
+      partner: partner,
+      message: err.message,
+      timestamp: new Date().toISOString()
+    });
   }
 });
 
 
 app.listen(port, () => {
-  logger.info(`Node.js service listening on port ${port}`);
+  azureService.logInfo(`Node.js service listening on port ${port}`);
 });
