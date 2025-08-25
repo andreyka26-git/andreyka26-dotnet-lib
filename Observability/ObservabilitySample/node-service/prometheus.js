@@ -8,14 +8,14 @@ collectDefaultMetrics();
 const httpRequestCounter = new promClient.Counter({
   name: 'http_requests_total',
   help: 'Total number of HTTP requests',
-  labelNames: ['method', 'route', 'status', 'partner']
+  labelNames: ['method', 'route', 'status']
 });
 
 // COUNTER: Monotonically increasing values, cumulative
 const errorCounter = new promClient.Counter({
   name: 'application_errors_total',
   help: 'Total number of application errors',
-  labelNames: ['partner', 'error_type']
+  labelNames: ['error_type']
 });
 
 // GAUGE: Values that can go up and down
@@ -35,7 +35,7 @@ const requestDurationHistogram = new promClient.Histogram({
   help: 'Duration of HTTP requests in seconds',
   // 1ms, 10ms, 100ms, 500ms, 1s, 2s, 5s, 10s
   buckets: [0.001, 0.01, 0.1, 0.5, 1, 2, 5, 10], 
-  labelNames: ['method', 'route', 'partner']
+  labelNames: ['method', 'route']
 });
 
 class PrometheusService {
@@ -47,12 +47,12 @@ class PrometheusService {
   }
 
   recordRequest(method, route, partner, status, duration) {
-    requestDurationHistogram.observe({ method, route, partner }, duration);
-    httpRequestCounter.inc({ method, route, status, partner });
+    requestDurationHistogram.observe({ method, route }, duration);
+    httpRequestCounter.inc({ method, route, status });
   }
 
   recordError(partner, errorType) {
-    errorCounter.inc({ partner, error_type: errorType });
+    errorCounter.inc({ error_type: errorType });
   }
 
   updateActivePartners(count) {
