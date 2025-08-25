@@ -6,18 +6,18 @@
   "panels": [
     {
       "id": 1,
-      "title": "Requests Per Second (1m)",
+      "title": "Total Requests (1m)",
       "type": "timeseries",
       "targets": [
         {
-          "expr": "sum by(route)(rate(http_requests_total[1m]))",
+          "expr": "sum by(route)(rate(http_requests_total[1m])) * 60",
           "legendFormat": "{{route}}",
           "refId": "A"
         }
       ],
       "fieldConfig": {
         "defaults": {
-          "unit": "reqps",
+          "unit": "short",
           "custom": {
             "spanNulls": true,
             "insertNulls": false
@@ -140,7 +140,7 @@
       "type": "timeseries",
       "targets": [
         {
-          "expr": "(sum by(route)(rate(http_request_duration_seconds_sum[1m])) / sum by(route)(rate(http_request_duration_seconds_count[1m]))) or on() vector(0)",
+          "expr": "sum by(route)(rate(http_request_duration_seconds_sum[1m])) / sum by(route)(rate(http_request_duration_seconds_count[1m]))",
           "legendFormat": "{{route}}",
           "refId": "A"
         }
@@ -203,7 +203,7 @@
       "type": "timeseries",
       "targets": [
         {
-          "expr": "histogram_quantile(0.95, sum by(route, le)(rate(http_request_duration_seconds_bucket[1m]))) or on() vector(0)",
+          "expr": "histogram_quantile(0.95, sum by(route, le)(rate(http_request_duration_seconds_bucket[1m])))",
           "legendFormat": "{{route}}",
           "refId": "A"
         }
@@ -270,7 +270,7 @@
       },
       "targets": [
         {
-          "expr": "{container=\"node-service\"}",
+          "expr": "{job=\"node-service\"}",
           "refId": "A",
           "datasource": {
             "type": "Loki",
@@ -296,8 +296,8 @@
       "type": "timeseries",
       "targets": [
         {
-          "expr": "rate(container_cpu_usage_seconds_total{name=\"node-service\"}[1m]) * 100",
-          "legendFormat": "CPU Usage %",
+          "expr": "sum(rate(container_cpu_usage_seconds_total{name=\"node-service\"}[1m])) * 100",
+          "legendFormat": "node-service",
           "refId": "A"
         }
       ],
@@ -365,14 +365,9 @@
       "type": "timeseries",
       "targets": [
         {
-          "expr": "container_memory_usage_bytes{name=\"node-service\"} / 1024 / 1024",
-          "legendFormat": "Memory Usage (MB)",
+          "expr": "sum(container_memory_usage_bytes{name=\"node-service\"}) / 1024 / 1024",
+          "legendFormat": "node-service",
           "refId": "A"
-        },
-        {
-          "expr": "container_spec_memory_limit_bytes{name=\"node-service\"} / 1024 / 1024",
-          "legendFormat": "Memory Limit (MB)",
-          "refId": "B"
         }
       ],
       "fieldConfig": {
@@ -428,34 +423,7 @@
           "min": 0,
           "noValue": "0"
         },
-        "overrides": [
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "Memory Limit (MB)"
-            },
-            "properties": [
-              {
-                "id": "custom.drawStyle",
-                "value": "line"
-              },
-              {
-                "id": "custom.lineStyle",
-                "value": {
-                  "dash": [10, 10],
-                  "fill": "dash"
-                }
-              },
-              {
-                "id": "color",
-                "value": {
-                  "mode": "fixed",
-                  "fixedColor": "red"
-                }
-              }
-            ]
-          }
-        ]
+        "overrides": []
       },
       "gridPos": {"h": 8, "w": 12, "x": 12, "y": 24}
     }

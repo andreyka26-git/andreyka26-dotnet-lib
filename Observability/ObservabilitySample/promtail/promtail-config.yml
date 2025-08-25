@@ -1,23 +1,31 @@
 server:
   http_listen_port: 9080
   grpc_listen_port: 0
+
 positions:
   filename: /tmp/positions.yaml
+
 clients:
   - url: http://loki:3100/loki/api/v1/push
+
 scrape_configs:
-  - job_name: system
-    static_configs:
-      - targets:
-          - localhost
-        labels:
-          job: varlogs
-          __path__: /var/log/*log
   - job_name: node-service
     static_configs:
       - targets:
           - localhost
         labels:
           job: node-service
+          __path__: /var/lib/docker/containers/6c601d293592*/*-json.log
+    pipeline_stages:
+      - json:
+          expressions:
+            output: log
+            stream: stream
+            timestamp: time
+      - static_labels:
           container: node-service
-          __path__: /var/lib/docker/containers/*/*-json.log
+      - timestamp:
+          source: timestamp
+          format: RFC3339Nano
+      - output:
+          source: output

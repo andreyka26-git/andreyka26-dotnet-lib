@@ -21,7 +21,6 @@ function requestMetricsMiddleware(req, res, next) {
   const startTime = Date.now();
   const partner = req.query.partner || 'unknown';
   const route = req.route ? req.route.path : req.path;
-  let status = '200';
   let error = null;
 
   try {
@@ -29,7 +28,6 @@ function requestMetricsMiddleware(req, res, next) {
     
   } catch (err) {
     error = err;
-    status = '500';
     throw err;
   } finally {
     // This will run after the route handler completes
@@ -62,8 +60,31 @@ app.get('/metrics', async (req, res) => {
   res.end(await prometheusService.getMetrics());
 });
 
+app.get('/infinite-loop', requestMetricsMiddleware, async (req, res) => {
+
+  let arr = []
+  try {
+    azureService.logInfo('Starting infinite loop', { partner });
+    console.log(`[${new Date().toISOString()}] Starting infinite loop for partner: ${partner}`);
+
+    let ind = 0
+    while (true) {
+      arr.push(ind++);
+      await delay(100);
+    }
+
+  } catch (err) {
+    res.status(500).json({
+      error: 'Internal Server Error',
+      partner: partner,
+      message: err.message
+    });
+  }
+});
+
 app.get('/call', requestMetricsMiddleware, async (req, res) => {
   const partner = req.query.partner || 'unknown';
+  const shouldError = req.query.error === 'true';
   
   try {
     // Track partner usage
@@ -73,14 +94,15 @@ app.get('/call', requestMetricsMiddleware, async (req, res) => {
     partnerStatistics[partner]++;
     
     azureService.logInfo('Processing request for partner', { partner });
+    console.log(`[${new Date().toISOString()}] Processing request for partner: ${partner}`);
     
     // Simulate processing time with random delay (0-2000ms for variety)
     const processingDelay = Math.random() * 2000;
     const isSlowRequest = processingDelay > 1000; // Consider >1s as slow
     
-    // Simulate 5% error rate - throw actual error
-    if (Math.random() < 0.05) {
-      throw new Error('Random processing error occurred');
+    // Only throw error if error=true query parameter is passed
+    if (shouldError) {
+      throw new Error('Error triggered by error=true query parameter');
     }
     
     // Simulate processing delay
@@ -97,6 +119,7 @@ app.get('/call', requestMetricsMiddleware, async (req, res) => {
     
   } catch (err) {
     azureService.logError('Error processing request', { partner, error: err.message });
+    console.log(`[${new Date().toISOString()}] Error processing request for partner ${partner}: ${err.message}`);
     
     res.status(500).json({ 
       error: 'Internal Server Error',
@@ -109,59 +132,28 @@ app.get('/call', requestMetricsMiddleware, async (req, res) => {
 app.get('/nocall', requestMetricsMiddleware, async (req, res) => {
   const partner = req.query.partner || 'unknown';
   
-  try {
-    azureService.logInfo('Removing partner', { partner });
-    
-    // Remove partner from statistics
-    if (partnerStatistics[partner]) {
-      delete partnerStatistics[partner];
-      
-      res.json({ 
-        success: true, 
-        message: `Partner ${partner} removed successfully`,
-        partner: partner
-      });
-    } else {
-      res.status(404).json({ 
-        success: false, 
-        message: `Partner ${partner} not found`,
-        partner: partner
-      });
-    }
-    
-  } catch (err) {
-    azureService.logError('Error removing partner', { partner, error: err.message });
-    
-    res.status(500).json({ 
-      error: 'Internal Server Error',
-      partner: partner,
-      message: err.message
-    });
-  }
-});
-
-app.get('/error', requestMetricsMiddleware, async (req, res) => {
-  const partner = req.query.partner || 'unknown';
+  azureService.logInfo('Removing partner', { partner });
+  console.log(`[${new Date().toISOString()}] Removing partner: ${partner}`);
   
-  try {
-    azureService.logInfo('Intentionally triggering error for testing', { partner });
+  // Remove partner from statistics
+  if (partnerStatistics[partner]) {
+    delete partnerStatistics[partner];
     
-    // Always throw an error for testing purposes
-    throw new Error('This endpoint always throws an error for testing metrics and monitoring');
-    
-  } catch (err) {
-    azureService.logError('Intentional error endpoint triggered', { partner, error: err.message });
-    
-    res.status(500).json({ 
-      error: 'Intentional Server Error',
-      partner: partner,
-      message: err.message,
-      timestamp: new Date().toISOString()
+    res.json({ 
+      success: true, 
+      message: `Partner ${partner} removed successfully`,
+      partner: partner
+    });
+  } else {
+    res.status(404).json({ 
+      success: false, 
+      message: `Partner ${partner} not found`,
+      partner: partner
     });
   }
 });
-
 
 app.listen(port, () => {
   azureService.logInfo(`Node.js service listening on port ${port}`);
+  console.log(`[${new Date().toISOString()}] Node.js service listening on port ${port}`);
 });
