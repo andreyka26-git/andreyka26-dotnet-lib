@@ -17,8 +17,9 @@ Write-Host "Found node-service container ID: $containerId" -ForegroundColor Gree
 $configPath = "./promtail/promtail-config.yml"
 $configContent = Get-Content $configPath -Raw
 
-# Replace the placeholder with actual container ID
+# Replace both placeholder and any existing container ID pattern
 $updatedConfig = $configContent -replace "CONTAINER_ID_PLACEHOLDER", $containerId
+$updatedConfig = $updatedConfig -replace "/var/lib/docker/containers/[a-f0-9]{12}\*", "/var/lib/docker/containers/$containerId*"
 
 # Write back to file
 $updatedConfig | Out-File -FilePath $configPath -Encoding UTF8 -NoNewline

@@ -64,19 +64,17 @@ app.get('/infinite-loop', requestMetricsMiddleware, async (req, res) => {
 
   let arr = []
   try {
-    azureService.logInfo('Starting infinite loop', { partner });
-    console.log(`[${new Date().toISOString()}] Starting infinite loop for partner: ${partner}`);
+    azureService.logInfo('INFINITE LOOP');
+    console.log(`[${new Date().toISOString()}] INFINITE LOOP`);
 
     let ind = 0
     while (true) {
       arr.push(ind++);
-      await delay(100);
     }
 
   } catch (err) {
     res.status(500).json({
       error: 'Internal Server Error',
-      partner: partner,
       message: err.message
     });
   }

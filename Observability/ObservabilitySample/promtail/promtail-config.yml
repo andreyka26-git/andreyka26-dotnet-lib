@@ -15,7 +15,7 @@ scrape_configs:
           - localhost
         labels:
           job: node-service
-          __path__: /var/lib/docker/containers/6c601d293592*/*-json.log
+          __path__: /var/lib/docker/containers/CONTAINER_ID_PLACEHOLDER*/*-json.log
     pipeline_stages:
       - json:
           expressions:
